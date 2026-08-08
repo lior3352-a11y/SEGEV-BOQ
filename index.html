@@ -528,8 +528,7 @@
 
   const demo=document.getElementById('appDemo'), toast=document.getElementById('toast');
   document.querySelectorAll('.demo-open').forEach(btn=>btn.addEventListener('click',e=>{
-    e.preventDefault(); demo.classList.add('show'); demo.setAttribute('aria-hidden','false');
-    toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2600);
+    e.preventDefault(); window.location.href='app.html';
   }));
   document.getElementById('closeDemo').addEventListener('click',()=>{demo.classList.remove('show');demo.setAttribute('aria-hidden','true')});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('closeDemo').click()});
