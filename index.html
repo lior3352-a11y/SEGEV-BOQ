@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEGEV BOQ — ניהול פרויקטים לקבלן העצמאי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Assistant:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2233;
+    --navy-2:#12314A;
+    --navy-3:#0a1b29;
+    --ochre:#C97A34;
+    --ochre-lite:#E0A15E;
+    --paper:#F1EBE0;
+    --paper-2:#FBF8F2;
+    --ink:#0C2233;
+    --line:rgba(224,161,94,.22);
+    --line-soft:rgba(241,235,224,.10);
+    --grid:rgba(224,161,94,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Assistant',sans-serif;
+    background:var(--navy);
+    color:var(--paper);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;font-feature-settings:"tnum"}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Rubik',sans-serif;line-height:1.15;letter-spacing:-.01em}
+
+  /* graph-paper backdrop */
+  .grid-bg{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:34px 34px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 40%,transparent 100%);
+  }
+  .content{position:relative;z-index:1}
+
+  /* eyebrow / technical labels */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--ochre-lite);display:inline-flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--ochre)}
+
+  /* nav */
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:rgba(12,34,51,.82);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:11px;font-family:'Rubik';font-weight:800;font-size:1.15rem}
+  .logo .mark{
+    width:30px;height:30px;border-radius:7px;background:var(--ochre);
+    display:grid;place-items:center;color:var(--navy);font-family:'IBM Plex Mono';font-weight:600;font-size:.9rem;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+  }
+  .logo small{color:var(--ochre-lite);font-family:'IBM Plex Mono';font-weight:400;font-size:.62rem;letter-spacing:.2em}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{color:var(--paper);text-decoration:none;font-size:.95rem;opacity:.82;transition:opacity .2s}
+  .nav-links a:hover{opacity:1}
+  .btn{
+    font-family:'Rubik';font-weight:600;font-size:.95rem;
+    padding:11px 22px;border-radius:9px;border:none;cursor:pointer;text-decoration:none;
+    display:inline-block;transition:transform .15s ease,box-shadow .2s ease,background .2s;
+  }
+  .btn-primary{background:var(--ochre);color:var(--navy);box-shadow:0 6px 20px -6px rgba(201,122,52,.6)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px -8px rgba(201,122,52,.7)}
+  .btn-ghost{background:transparent;color:var(--paper);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--ochre-lite);background:rgba(224,161,94,.07)}
+  @media(max-width:820px){.nav-links a:not(.btn){display:none}}
+
+  /* hero */
+  .hero{padding:76px 0 90px}
+  .hero-grid{display:grid;grid-template-columns:1fr 1.02fr;gap:56px;align-items:center}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px}}
+  .hero h1{font-size:clamp(2.3rem,5vw,3.7rem);font-weight:800;margin:22px 0 20px}
+  .hero h1 .pencil{position:relative;color:var(--ochre-lite);white-space:nowrap}
+  .hero h1 .pencil::after{
+    content:"";position:absolute;right:0;left:0;bottom:-6px;height:8px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8'%3E%3Cpath d='M2 5 Q50 1 100 4 T198 3' stroke='%23C97A34' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  }
+  .hero p.lead{font-size:1.18rem;opacity:.86;max-width:30em;margin-bottom:30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{font-family:'IBM Plex Mono';font-size:.78rem;opacity:.6;margin-top:18px}
+
+  /* BOQ signature card */
+  .boq-card{
+    background:linear-gradient(180deg,var(--paper-2),var(--paper));
+    color:var(--ink);border-radius:16px;overflow:hidden;
+    box-shadow:0 30px 70px -24px rgba(0,0,0,.6),0 0 0 1px rgba(224,161,94,.25);
+    transform:rotate(-.6deg);
+  }
+  .boq-head{
+    background:var(--navy);color:var(--paper);padding:15px 20px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .boq-head .t{font-family:'Rubik';font-weight:700;font-size:1.02rem}
+  .boq-head .p{font-family:'IBM Plex Mono';font-size:.72rem;color:var(--ochre-lite);letter-spacing:.12em}
+  table.boq{width:100%;border-collapse:collapse;font-size:.86rem}
+  table.boq th,table.boq td{padding:11px 16px;border-bottom:1px solid rgba(12,34,51,.09)}
+  table.boq thead th{
+    font-family:'IBM Plex Mono';font-weight:500;font-size:.68rem;letter-spacing:.08em;
+    text-transform:uppercase;color:#6b7d8c;background:rgba(12,34,51,.03);text-align:right;
+  }
+  table.boq td.desc{text-align:right;font-weight:500}
+  table.boq td.num,table.boq th.num{text-align:left;font-family:'IBM Plex Mono';font-variant-numeric:tabular-nums;color:#3a4d5c}
+  table.boq td.total{font-weight:600;color:var(--navy)}
+  .boq-foot{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 20px;background:rgba(201,122,52,.09);border-top:1px solid rgba(201,122,52,.25);
+  }
+  .boq-foot .lbl{font-family:'Rubik';font-weight:600}
+  .boq-foot .val{font-family:'IBM Plex Mono';font-weight:600;font-size:1.15rem;color:var(--ochre)}
+  .boq-bar{height:6px;background:rgba(12,34,51,.10)}
+  .boq-bar span{display:block;height:100%;width:68%;background:linear-gradient(90deg,var(--ochre),var(--ochre-lite))}
+
+  /* section scaffolding */
+  section{padding:82px 0;position:relative}
+  .band{background:var(--navy-3);border-block:1px solid var(--line-soft)}
+  .sec-head{max-width:34em;margin-bottom:48px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:700;margin:16px 0 14px}
+  .sec-head p{opacity:.8;font-size:1.08rem}
+
+  /* pain / stat strip */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden}
+  @media(max-width:720px){.stat-row{grid-template-columns:1fr}}
+  .stat{background:var(--navy);padding:30px 26px}
+  .stat .n{font-family:'IBM Plex Mono';font-weight:600;font-size:2.2rem;color:var(--ochre-lite)}
+  .stat .d{opacity:.8;margin-top:6px;font-size:.98rem}
+
+  /* modules spec sheet */
+  .modules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.modules{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:540px){.modules{grid-template-columns:1fr}}
+  .mod{
+    background:var(--navy-2);border:1px solid var(--line-soft);border-radius:13px;padding:22px 20px;
+    transition:transform .2s ease,border-color .2s ease;position:relative;overflow:hidden;
+  }
+  .mod:hover{transform:translateY(-4px);border-color:var(--line)}
+  .mod .idx{font-family:'IBM Plex Mono';font-size:.72rem;color:var(--ochre);letter-spacing:.1em}
+  .mod h3{font-size:1.16rem;font-weight:600;margin:10px 0 7px}
+  .mod p{opacity:.76;font-size:.94rem}
+  .mod.soon::after{
+    content:"בקרוב";position:absolute;top:14px;left:14px;
+    font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.12em;
+    color:var(--navy);background:var(--ochre-lite);padding:3px 9px;border-radius:20px;
+  }
+
+  /* live product demo */
+  .demo-open{cursor:pointer}
+  .app-demo{display:none;position:fixed;inset:0;z-index:100;background:#07131e;padding:18px;overflow:auto}
+  .app-demo.show{display:block}
+  .app-shell{max-width:1240px;min-height:calc(100vh - 36px);margin:auto;background:#f5f7f8;color:#172b3a;border-radius:18px;overflow:hidden;display:grid;grid-template-columns:232px 1fr}
+  .app-side{background:#0c2233;color:#dce7ec;padding:25px 16px}.app-brand{font:800 1.1rem 'Rubik';display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:24px}.app-brand b{background:var(--ochre);color:var(--navy);border-radius:7px;padding:4px 8px}.app-side p{font:500 .72rem 'IBM Plex Mono';letter-spacing:.08em;color:#84a1af;margin:24px 10px 9px}.app-menu button{width:100%;text-align:right;border:0;background:transparent;color:#c5d3da;border-radius:8px;padding:11px 12px;font:500 1rem 'Assistant';cursor:pointer}.app-menu button:hover,.app-menu button.active{background:#1b4155;color:#fff}.app-menu button.active{border-right:3px solid var(--ochre)}
+  .app-main{padding:30px 34px}.app-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:25px}.app-top h2{font-size:1.65rem;color:#0c2233}.app-top p{color:#627582;margin-top:4px}.close-demo{border:1px solid #ccd6db;background:#fff;border-radius:8px;padding:9px 13px;color:#284252;cursor:pointer;font:600 .9rem 'Rubik'}
+  .demo-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.demo-kpi{background:#fff;border:1px solid #e2e8eb;border-radius:12px;padding:17px}.demo-kpi span{font-size:.86rem;color:#6b7e88}.demo-kpi strong{display:block;font:600 1.45rem 'IBM Plex Mono';color:#12314a;margin-top:6px}.demo-kpi.red strong{color:#bb4d38}.demo-kpi.green strong{color:#24805c}
+  .radar-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:#fff;border:1px solid #e2e8eb;border-radius:13px;padding:20px}.panel h3{font-size:1.12rem;color:#12314a;margin-bottom:4px}.panel .sub{font-size:.88rem;color:#6d7d86;margin-bottom:18px}.risk{display:grid;grid-template-columns:100px 1fr 54px;align-items:center;gap:12px;margin:15px 0;font-size:.93rem}.risk-bar{height:10px;background:#edf1f2;border-radius:10px;overflow:hidden}.risk-bar i{display:block;height:100%;border-radius:10px;background:#d66a42}.risk.ok .risk-bar i{background:#3c9d70}.risk b{font:600 .82rem 'IBM Plex Mono';text-align:left}.alert{border:1px solid #f1d4c6;background:#fff7f2;padding:14px;border-radius:10px;margin-top:13px}.alert b{color:#a7432e;display:block;margin-bottom:4px}.action{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #edf0f1;padding:13px 0}.action:last-child{border:0}.action small{display:block;color:#6c7d85}.save{color:#27805c;font:600 .82rem 'IBM Plex Mono';white-space:nowrap}.demo-note{margin-top:18px;color:#6a7a82;font-size:.86rem}.toast{position:fixed;bottom:30px;left:30px;background:#12314a;color:#fff;padding:13px 18px;border-radius:9px;display:none;z-index:110}.toast.show{display:block}
+  @media(max-width:820px){.app-shell{grid-template-columns:1fr}.app-side{display:none}.app-main{padding:24px 16px}.demo-kpis,.radar-grid{grid-template-columns:1fr}.app-top{gap:12px}.app-top h2{font-size:1.35rem}}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;counter-reset:s}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{position:relative;padding-top:18px;border-top:2px solid var(--line)}
+  .step .num{
+    font-family:'IBM Plex Mono';font-weight:600;color:var(--ochre);font-size:.95rem;
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  }
+  .step .num::before{content:"";display:inline-block;width:9px;height:9px;background:var(--ochre);border-radius:2px;transform:rotate(45deg)}
+  .step h3{font-size:1.24rem;font-weight:600;margin-bottom:8px}
+  .step p{opacity:.8}
+
+  /* pricing */
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+  @media(max-width:840px){.prices{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+  .price{
+    background:var(--navy-2);border:1px solid var(--line-soft);border-radius:16px;padding:30px 26px;
+    display:flex;flex-direction:column;
+  }
+  .price.feature{border-color:var(--ochre);box-shadow:0 0 0 1px var(--ochre),0 24px 50px -22px rgba(201,122,52,.5);position:relative}
+  .price.feature::before{
+    content:"הכי פופולרי";position:absolute;top:-12px;right:24px;
+    background:var(--ochre);color:var(--navy);font-family:'Rubik';font-weight:600;font-size:.78rem;
+    padding:4px 14px;border-radius:20px;
+  }
+  .price .tier{font-family:'Rubik';font-weight:700;font-size:1.3rem}
+  .price .who{opacity:.7;font-size:.9rem;margin:4px 0 18px;min-height:2.6em}
+  .price .amt{font-family:'IBM Plex Mono';font-weight:600;font-size:2.3rem;line-height:1}
+  .price .amt small{font-size:.9rem;opacity:.7;font-weight:400}
+  .price ul{list-style:none;margin:22px 0 26px;display:flex;flex-direction:column;gap:11px}
+  .price li{position:relative;padding-right:26px;font-size:.95rem;opacity:.9}
+  .price li::before{
+    content:"";position:absolute;right:0;top:7px;width:14px;height:8px;
+    border-right:2px solid var(--ochre);border-bottom:2px solid var(--ochre);
+    transform:rotate(-45deg) scaleX(-1);
+  }
+  .price .btn{margin-top:auto;text-align:center}
+
+  /* final cta */
+  .cta-band{
+    background:linear-gradient(120deg,var(--navy-2),var(--navy-3));
+    border:1px solid var(--line);border-radius:22px;padding:56px 40px;text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .cta-band h2{font-size:clamp(1.8rem,3.6vw,2.7rem);font-weight:800;margin-bottom:14px}
+  .cta-band p{opacity:.85;font-size:1.1rem;max-width:32em;margin:0 auto 28px}
+
+  footer{padding:44px 0 60px;border-top:1px solid var(--line-soft);opacity:.85}
+  .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;align-items:center}
+  .foot-in .mono{font-size:.8rem;opacity:.7}
+
+  /* credibility */
+  .cred{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;
+    background:var(--navy-2);border:1px solid var(--line);border-radius:18px;padding:34px 36px}
+  @media(max-width:640px){.cred{grid-template-columns:1fr;text-align:center;gap:18px}}
+  .cred .seal{width:78px;height:78px;border-radius:15px;background:var(--ochre);color:var(--navy);
+    display:grid;place-items:center;font-family:'IBM Plex Mono';font-weight:600;font-size:.68rem;
+    text-align:center;line-height:1.35;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+  @media(max-width:640px){.cred .seal{margin:0 auto}}
+  .cred h3{font-family:'Rubik';font-weight:700;font-size:1.4rem;margin:8px 0 8px}
+  .cred p{opacity:.82}
+
+  /* faq */
+  .faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .faq details{background:var(--navy-2);border:1px solid var(--line-soft);border-radius:12px;
+    padding:0 22px;transition:border-color .2s}
+  .faq details[open]{border-color:var(--line)}
+  .faq summary{list-style:none;cursor:pointer;padding:18px 0;font-family:'Rubik';font-weight:600;
+    font-size:1.06rem;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-family:'IBM Plex Mono';color:var(--ochre);font-size:1.5rem;
+    transition:transform .2s ease;flex-shrink:0;line-height:1}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq .a{padding:0 0 20px;opacity:.82;line-height:1.75}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+    .boq-card{transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="content">
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="logo">
+      <span class="mark">Σ</span>
+      <span>SEGEV&nbsp;BOQ<br><small>ניהול בנייה</small></span>
+    </div>
+    <div class="nav-links">
+      <a href="#modules">מודולים</a>
+      <a href="#how">איך זה עובד</a>
+      <a href="#pricing">מחירים</a>
+      <a href="#start" class="btn btn-primary">התחלה חינם</a>
+    </div>
+  </div>
+</nav>
+
+<div class="app-demo" id="appDemo" aria-hidden="true">
+  <div class="app-shell">
+    <aside class="app-side"><div class="app-brand"><b>Σ</b> SEGEV BOQ</div><p>פרויקט פעיל</p><div class="app-menu"><button>סקירת פרויקט</button><button>כתב כמויות</button><button>לוח זמנים</button><button class="active">Profit Radar</button><button>הוצאות ועדכונים</button><button>ישיבות והחלטות</button></div></aside>
+    <main class="app-main">
+      <div class="app-top"><div><h2>Profit Radar · שיפוץ גן ילדים הרצליה</h2><p>נכון ל־08.08.2026 · מערכת מזהה היכן הרווח בסיכון, לפני שהוא נעלם.</p></div><button class="close-demo" id="closeDemo">חזרה לאתר ×</button></div>
+      <section class="demo-kpis"><div class="demo-kpi"><span>חוזה מאושר</span><strong>₪850,000</strong></div><div class="demo-kpi"><span>עלות צפויה</span><strong>₪733,500</strong></div><div class="demo-kpi green"><span>רווח צפוי</span><strong>₪116,500</strong></div><div class="demo-kpi red"><span>סיכון לרווח</span><strong>₪28,400</strong></div></section>
+      <div class="radar-grid"><section class="panel"><h3>מפת סיכונים</h3><p class="sub">הסיכון מחושב מול תקציב, ביצוע בפועל ולוח הזמנים.</p><div class="risk"><span>חשמל</span><div class="risk-bar"><i style="width:82%"></i></div><b>גבוה</b></div><div class="risk"><span>מיזוג</span><div class="risk-bar"><i style="width:65%"></i></div><b>בינוני</b></div><div class="risk"><span>ריצוף</span><div class="risk-bar"><i style="width:38%"></i></div><b>נמוך</b></div><div class="risk ok"><span>צביעה</span><div class="risk-bar"><i style="width:20%"></i></div><b>תקין</b></div><div class="alert"><b>⚠ חריגה מתקרבת בחשמל · ₪12,400</b>הזמנת השינוי טרם אושרה, והביצוע כבר הושלם ב־74%.</div></section><section class="panel"><h3>פעולות להצלת רווח</h3><p class="sub">שלוש פעולות שיכולות לצמצם את הסיכון השבוע.</p><div class="action"><div><b>לאשר הזמנת שינוי · חשמל</b><small>לפני סגירת תשלום לקבלן המשנה</small></div><span class="save">+₪12,400</span></div><div class="action"><div><b>להשוות הצעת מיזוג</b><small>פער של 8% מול התקציב המקורי</small></div><span class="save">+₪7,200</span></div><div class="action"><div><b>לעדכן לוח זמנים</b><small>עיכוב של 4 ימים מייצר עלויות אתר</small></div><span class="save">+₪4,800</span></div><p class="demo-note">פוטנציאל הצלה מיידי: <b>₪24,400</b></p></section></div>
+    </main>
+  </div>
+</div><div class="toast" id="toast">הדמו פתוח — זה המסך שיקבל הקבלן.</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">מערכת ניהול לקבלן העצמאי</span>
+      <h1>כתב הכמויות, הביצוע והתקציב — <span class="pencil">במקום אחד</span></h1>
+      <p class="lead">די להריץ פרויקט על אקסל, וואטסאפ ודפים. SEGEV BOQ מרכז את כתב הכמויות, מעקב הביצוע, הזמנות השינוי והפיקוח — כדי שתדע בכל רגע איפה הפרויקט עומד מול התקציב.</p>
+      <div class="hero-cta">
+        <a href="#start" class="btn btn-primary">פתחו פרויקט ראשון בחינם</a>
+        <a href="#" class="btn btn-ghost demo-open">פתחו דמו חי</a>
+      </div>
+      <p class="hero-note">// ללא כרטיס אשראי · עברית מלאה · תואם קטלוג דקל</p>
+    </div>
+
+    <!-- signature: live BOQ card -->
+    <div class="boq-card" aria-label="דוגמת כתב כמויות">
+      <div class="boq-head">
+        <span class="t">כתב כמויות · שיפוץ דירה</span>
+        <span class="p">PRJ-042</span>
+      </div>
+      <table class="boq">
+        <thead>
+          <tr>
+            <th>תיאור</th>
+            <th class="num">יח'</th>
+            <th class="num">כמות</th>
+            <th class="num">מחיר יח'</th>
+            <th class="num">סה"כ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="desc">ריצוף גרניט פורצלן 60/60</td>
+            <td class="num">מ"ר</td><td class="num">145</td><td class="num">128</td><td class="num total">18,560</td>
+          </tr>
+          <tr>
+            <td class="desc">צביעת קירות פנים · 2 שכבות</td>
+            <td class="num">מ"ר</td><td class="num">320</td><td class="num">34</td><td class="num total">10,880</td>
+          </tr>
+          <tr>
+            <td class="desc">נקודת חשמל כולל הכנה</td>
+            <td class="num">קומפ'</td><td class="num">42</td><td class="num">180</td><td class="num total">7,560</td>
+          </tr>
+          <tr>
+            <td class="desc">הריסת מחיצות גבס</td>
+            <td class="num">מ"ר</td><td class="num">55</td><td class="num">46</td><td class="num total">2,530</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="boq-bar"><span></span></div>
+      <div class="boq-foot">
+        <span class="lbl">בוצע מול תקציב · 68%</span>
+        <span class="val">₪ 39,530</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- PAIN -->
+<section class="band" id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">הבעיה</span>
+      <h2>הפרויקט מתנהל בעשרה מקומות — והחריגה מתגלה מאוחר מדי</h2>
+      <p>קבלן עצמאי מנהל היום כתב כמויות באקסל, שינויים בוואטסאפ, פיקוח בצילומים ותקציב בראש. כשמשהו חורג, מגלים את זה כשכבר משלמים עליו.</p>
+    </div>
+    <div class="stat-row reveal">
+      <div class="stat"><div class="n">9</div><div class="d">מודולים שמכסים את כל מחזור חיי הפרויקט — מהצעת מחיר ועד דוח סופי</div></div>
+      <div class="stat"><div class="n">1</div><div class="d">מקור אמת אחד לכתב הכמויות, לביצוע ולתקציב — בלי גרסאות כפולות</div></div>
+      <div class="stat"><div class="n">5</div><div class="d">רמות הרשאה: מנהל, מפקח, קבלן, ספק וצופה — כל אחד רואה רק את שלו</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">גיליון מפרט</span>
+      <h2>כל מה שצריך כדי לנהל אתר — במערכת אחת</h2>
+      <p>תשעה מודולים שעובדים יחד. הנתון שהזנת בכתב הכמויות זורם לתקציב, לביצוע ולדוחות — בלי להקליד פעמיים.</p>
+    </div>
+    <div class="modules">
+      <div class="mod reveal"><div class="idx">01</div><h3>כתב כמויות</h3><p>בניית BOQ מלא לפי פרקים, תואם מבנה קטלוג דקל, עם תמחור מהיר.</p></div>
+      <div class="mod reveal"><div class="idx">02</div><h3>מעקב ביצוע</h3><p>סימון כמות שבוצעה מול מתוכנן, אחוזי השלמה בזמן אמת לכל סעיף.</p></div>
+      <div class="mod reveal"><div class="idx">03</div><h3>הזמנות שינוי</h3><p>תיעוד חריגים ותוספות מסודר — עם אישור, מחיר ומעקב סטטוס.</p></div>
+      <div class="mod reveal"><div class="idx">04</div><h3>פיקוח אתר</h3><p>דוחות ביקור, ליקויים ותמונות מהשטח, מקושרים ישירות לסעיפים.</p></div>
+      <div class="mod reveal"><div class="idx">05</div><h3>תקציב</h3><p>מבט על מול ביצוע: כמה תוקצב, כמה נוצל, וכמה נותר — בכל רגע.</p></div>
+      <div class="mod reveal"><div class="idx">06</div><h3>לוח זמנים</h3><p>שלבי הפרויקט, אבני דרך ותלויות — כדי לדעת מה תקוע ומה בזמן.</p></div>
+      <div class="mod reveal"><div class="idx">07</div><h3>רכש</h3><p>ניהול הזמנות לספקים וקבלני משנה, מקושר לכתב הכמויות ולתקציב.</p></div>
+      <div class="mod reveal"><div class="idx">08</div><h3>דוחות</h3><p>הפקת דוחות מקצועיים ללקוח ולעצמך — כתב כמויות, תקציב וביצוע.</p></div>
+      <div class="mod reveal soon"><div class="idx">09</div><h3>קריאת תוכניות · AI</h3><p>העלאת תוכנית והפקת כתב כמויות ראשוני אוטומטית. בפיתוח.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="band" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">איך מתחילים</span>
+      <h2>מהצעת מחיר לפרויקט מנוהל — בשלושה צעדים</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="num">שלב 01</div><h3>פותחים פרויקט</h3><p>מקימים פרויקט חדש או ממירים ליד קיים מה‑CRM, ובונים את כתב הכמויות לפי פרקים.</p></div>
+      <div class="step reveal"><div class="num">שלב 02</div><h3>מנהלים את השטח</h3><p>מעדכנים ביצוע, מתעדים פיקוח והזמנות שינוי — והתקציב מתעדכן לבד.</p></div>
+      <div class="step reveal"><div class="num">שלב 03</div><h3>מפיקים דוחות</h3><p>מפיקים דוח מסודר ללקוח או לשמאי בלחיצה — בעברית, מוכן לשליחה.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIBILITY -->
+<section>
+  <div class="wrap">
+    <div class="cred reveal">
+      <div class="seal">BUILT<br>ON&nbsp;SITE</div>
+      <div>
+        <span class="eyebrow">למה זה שונה</span>
+        <h3>נבנתה בידי מפקח בנייה פעיל — לא בידי חברת תוכנה</h3>
+        <p>כל מודול נולד מצורך אמיתי באתר: כתב כמויות שמתיישב עם קטלוג דקל, פיקוח שמתחבר ישירות לסעיפים, ותקציב שמדבר בשפה של קבלן. בלי פיצ'רים שנראים טוב במצגת ומתפרקים בשטח.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">תמחור</span>
+      <h2>מתחילים בחינם, משדרגים כשגדלים</h2>
+      <p>בלי התחייבות. משנים או מבטלים בכל חודש.</p>
+    </div>
+    <div class="prices">
+      <div class="price reveal">
+        <div class="tier">חינם</div>
+        <div class="who">לניסיון ולפרויקט בודד</div>
+        <div class="amt">₪0</div>
+        <ul>
+          <li>פרויקט אחד פעיל</li>
+          <li>כתב כמויות ודוחות בסיסיים</li>
+          <li>משתמש יחיד</li>
+        </ul>
+        <a href="#start" class="btn btn-ghost">התחלה חינם</a>
+      </div>
+      <div class="price feature reveal">
+        <div class="tier">Pro</div>
+        <div class="who">לקבלן ולמפקח העצמאי</div>
+        <div class="amt">₪149<small> / חודש</small></div>
+        <ul>
+          <li>פרויקטים ללא הגבלה</li>
+          <li>כל תשעת המודולים</li>
+          <li>מעקב תקציב וביצוע מלא</li>
+          <li>דוחות מקצועיים ללקוח</li>
+        </ul>
+        <a href="#start" class="btn btn-primary">שדרגו ל‑Pro</a>
+      </div>
+      <div class="price reveal">
+        <div class="tier">Business</div>
+        <div class="who">לצוותים ולמשרדי בנייה</div>
+        <div class="amt">₪399<small> / חודש</small></div>
+        <ul>
+          <li>כל מה שב‑Pro</li>
+          <li>הרשאות ל‑5 תפקידים</li>
+          <li>CRM לניהול לידים ולקוחות</li>
+          <li>ריבוי משתמשים בצוות</li>
+        </ul>
+        <a href="#start" class="btn btn-ghost">דברו איתנו</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="band" id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-inline:auto;text-align:center">
+      <span class="eyebrow" style="justify-content:center">שאלות נפוצות</span>
+      <h2>מה שקבלנים שואלים לפני שמתחילים</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal" open>
+        <summary>צריך להתקין משהו?</summary>
+        <div class="a">לא. הכול רץ בדפדפן — במחשב ובנייד. נכנסים עם משתמש וסיסמה ומתחילים לעבוד, בלי התקנות ובלי עדכוני גרסה.</div>
+      </details>
+      <details class="reveal">
+        <summary>אפשר לעבוד עם קטלוג דקל?</summary>
+        <div class="a">כן. מבנה כתב הכמויות בנוי לפי פרקים בהתאמה לקטלוג דקל, כך שהתמחור וההתאמה מול הקטלוג נשארים מהירים ומוכרים.</div>
+      </details>
+      <details class="reveal">
+        <summary>זה עובד מהאתר, מהנייד?</summary>
+        <div class="a">כן. מעדכנים ביצוע, מתעדים ליקויי פיקוח ומעלים תמונות ישירות מהשטח — והנתונים מתעדכנים לכל שאר המודולים בזמן אמת.</div>
+      </details>
+      <details class="reveal">
+        <summary>מה עם ההרשאות בצוות?</summary>
+        <div class="a">חמש רמות הרשאה — מנהל, מפקח, קבלן, ספק וצופה. כל תפקיד רואה ועורך רק את מה שרלוונטי לו, בלי לחשוף את כל הפרויקט.</div>
+      </details>
+      <details class="reveal">
+        <summary>אפשר לבטל בכל שלב?</summary>
+        <div class="a">כן. מתחילים חינם ללא כרטיס אשראי, ומשדרגים או מבטלים בכל חודש. הנתונים שלך נשארים שלך וניתנים לייצוא בכל רגע.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="start">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <span class="eyebrow" style="justify-content:center">מוכנים?</span>
+      <h2>הפרויקט הבא שלכם — מנוהל כמו שצריך</h2>
+      <p>פתחו חשבון והקימו פרויקט ראשון בדקות. בלי כרטיס אשראי, בלי התקנה — הכול בדפדפן.</p>
+      <a href="#start" class="btn btn-primary">פתחו חשבון חינם</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="logo"><span class="mark">Σ</span><span>SEGEV&nbsp;BOQ</span></div>
+    <span class="mono">// נבנה עבור הקבלן הישראלי · שגב פרויקטים</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+  // ── כתובת ההרשמה: הזן פעם אחת כאן, וכל כפתורי ההתחלה יצביעו לאפליקציה ──
+  // כל עוד ריק — הכפתורים גוללים לאזור ההרשמה בתחתית הדף, ולעולם לא קופצים לראש הדף.
+  const SIGNUP_URL = ""; // לדוגמה: "https://app.segev-boq.com/signup"
+  if (SIGNUP_URL) {
+    document.querySelectorAll('a.btn-primary').forEach(a=>{
+      a.href = SIGNUP_URL; a.target = "_blank"; a.rel = "noopener";
+    });
+  }
+
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  const demo=document.getElementById('appDemo'), toast=document.getElementById('toast');
+  document.querySelectorAll('.demo-open').forEach(btn=>btn.addEventListener('click',e=>{
+    e.preventDefault(); demo.classList.add('show'); demo.setAttribute('aria-hidden','false');
+    toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2600);
+  }));
+  document.getElementById('closeDemo').addEventListener('click',()=>{demo.classList.remove('show');demo.setAttribute('aria-hidden','true')});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('closeDemo').click()});
+</script>
+</body>
+</html>
