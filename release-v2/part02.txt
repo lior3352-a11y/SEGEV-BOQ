@@ -1,0 +1,277 @@
+abs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:11px;font-weight:800}.auth-tabs button.active{background:var(--gold);border-color:var(--gold)}
+    .auth-pane{display:none}.auth-pane.active{display:grid;gap:13px}.auth-pane .form{grid-template-columns:1fr 1fr}.auth-pane .full{grid-column:1/-1}.auth-msg{min-height:22px;color:var(--red);font-size:13px;font-weight:700}.auth-note{font-size:12px;color:var(--muted);line-height:1.5}
+    .activation-step{display:none;gap:13px}.activation-step.active{display:grid}.license-banner{display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--gold-soft);border:1px solid #fde0b6;border-radius:8px;font-size:13px}.license-banner.show{display:flex}
+    .admin-buyers{display:none}.admin-buyers.show{display:block}.buyer-actions{display:flex;gap:6px;flex-wrap:wrap}.buyer-actions button{padding:6px 8px;font-size:11px}.expired-lock{position:fixed;inset:0;z-index:1100;background:rgba(16,24,40,.78);display:none;place-items:center;padding:24px}.expired-lock.show{display:grid}.expired-box{width:min(520px,100%);background:#fff;border-radius:12px;padding:28px;text-align:center}
+    @media(max-width:620px){.auth-pane .form{grid-template-columns:1fr}.auth-pane .full{grid-column:auto}}
+
+</style>
+</head>
+<body>
+
+<div class="auth-gate" id="authGate">
+  <div class="auth-shell">
+    <div class="auth-brand"><div class="mark">Σ</div><div><strong style="font-size:22px">SEGEV BOQ</strong><p>מערכת ניהול ובקרת פרויקטים</p></div></div>
+    <div class="auth-body">
+      <div class="auth-tabs"><button id="loginTab" class="active">כניסה</button><button id="signupTab">פתיחת חשבון</button></div>
+      <div class="auth-pane active" id="loginPane">
+        <label>אימייל <input id="loginEmail" type="email" placeholder="you@example.com"></label>
+        <label>סיסמה <input id="loginPassword" type="password" placeholder="••••••••"></label>
+        <button class="btn primary" id="loginBtn">כניסה למערכת</button>
+        <button class="btn ghost" id="forgotBtn">שכחתי סיסמה</button>
+        <div class="auth-msg" id="loginMsg"></div>
+        <div class="auth-note">בכניסה נבדקים גם סטטוס הרישיון ותאריך התוקף של הלקוח.</div>
+      </div>
+      <div class="auth-pane" id="signupPane">
+        <div class="form">
+          <label>שם מלא <input id="regName"></label><label>חברה <input id="regCompany"></label>
+          <label>ח.פ./עוסק <input id="regCompanyId"></label><label>טלפון <input id="regPhone"></label>
+          <label class="full">אימייל <input id="regEmail" type="email"></label>
+          <label>סיסמה <input id="regPassword" type="password"></label>
+          <label>סוג משתמש <select id="regRole" style="border:1px solid var(--line);border-radius:8px;padding:12px"><option>בעלים</option><option>מנהל פרויקט</option><option>מנהל עבודה</option><option>לקוח</option></select></label>
+        </div>
+        <button class="btn primary" id="registerBtn">המשך להפעלה</button><div class="auth-msg" id="signupMsg"></div>
+      </div>
+      <div class="activation-step" id="activationStep">
+        <h3>הפעלת רישיון</h3><p>הזן את קוד ההפעלה שקיבלת בעת הרכישה.</p>
+        <label>קוד הפעלה <input id="activationCode" placeholder="SEGEV-XXXX-XXXX"></label>
+        <button class="btn primary" id="activateBtn">אמת קוד והפעל</button><button class="btn" id="backToSignup">חזרה</button><div class="auth-msg" id="activationMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="expired-lock" id="expiredLock"><div class="expired-box"><h2>תקופת השימוש הסתיימה</h2><p>הרישיון של חשבון זה אינו בתוקף. הנתונים נשמרו, אך העבודה במערכת נעולה עד לחידוש.</p><button class="btn primary" id="expiredLogout">חזרה למסך הכניסה</button></div></div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">S</div>
+        <div>
+          <strong>SEGEV BOQ</strong>
+          <span>AI Project Manager לקבלני ביצוע</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="ניווט">
+        <button class="active" data-view="owner">בעלים <span>01</span></button>
+        <button data-view="alerts">התראות <span>02</span></button>
+        <button data-view="project">פרויקט <span>03</span></button>
+        <button data-view="tasks">משימות <span>04</span></button>
+        <button data-view="team">צוות <span>05</span></button>
+        <button data-view="boq">כתב כמויות <span>06</span></button>
+        <button data-view="schedule">לו"ז <span>07</span></button>
+        <button data-view="field">שטח <span>08</span></button>
+        <button data-view="documents">מסמכים <span>09</span></button>
+        <button data-view="radar">Profit Radar <span>10</span></button>
+        <button data-view="suppliers">ספקים <span>11</span></button>
+        <button data-view="procurement">רכש <span>12</span></button>
+        <button data-view="clients">לקוחות <span>13</span></button>
+        <button data-view="accounts">חשבונות <span>14</span></button>
+        <button data-view="reports">דוחות <span>15</span></button>
+        <button data-view="backup">גיבוי <span>16</span></button>
+        <button data-view="monthly">חשבון חודשי <span>18</span></button>
+        <button data-view="buyers">רוכשים ורישיונות <span>19</span></button>
+        <button data-view="ai">שגב AI <span>17</span></button>
+      </nav>
+
+      <div class="side-insight">
+        <strong>Always-On AI</strong>
+        <p>שגב זיהה ירידה צפויה ברווח בפרויקט הרצליה והכין פעולה מומלצת לספק האלומיניום.</p>
+        <button class="btn primary" id="sideBrief">פתח דוח בוקר</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">מרכז פיקוד לבעלים</h1>
+          <p id="pageSubtitle">מסך מרווח שמראה רק את מה שדורש החלטה: כסף, זמן, סיכון ופעולה.</p>
+        </div>
+        <div class="toolbar">
+          <div class="license-banner" id="licenseBanner"><strong id="licenseWho"></strong><span id="licenseUntil"></span><button class="btn" id="logoutBtn" style="padding:6px 9px;min-height:auto">יציאה</button></div>
+          <button class="btn" type="button" onclick="window.location.href='index.html'" title="חזרה למצגת SEGEV BOQ">← חזרה למצגת</button>
+          <button class="btn dark" id="startDemoBtn">התחל דמו 5 דקות</button>
+          <button class="btn" id="statusBtn">שאל את שגב</button>
+          <button class="btn primary" id="newProjectBtn">פרויקט חדש</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <div class="stack">
+          <section class="view active" id="view-owner">
+            <div class="stack">
+              <article class="card premium-band">
+                <span class="label">SEGEV BOQ COMMAND CENTER</span>
+                <h2>מערכת שמזהה איפה הפרויקט עומד להפסיד כסף</h2>
+                <p>בעלים, מנהל עבודה ולקוח רואים תמונת מצב אחת: התראות, רווח, לו"ז, שטח ושגב AI בעברית.</p>
+                <div class="command-strip">
+                  <div class="command-chip"><span class="label">Always-On AI</span><strong>4 התראות</strong></div>
+                  <div class="command-chip"><span class="label">Profit Radar</span><strong>₪42K סיכון</strong></div>
+                  <div class="command-chip"><span class="label">Time-to-Money</span><strong>6 ימי איחור</strong></div>
+                  <div class="command-chip"><span class="label">שגב AI</span><strong>עברית וקול</strong></div>
+                </div>
+              </article>
+              <div class="metrics">
+                <article class="card metric"><span class="label">פרויקטים פעילים</span><strong class="number" id="projectCount">3</strong><span class="delta">1 דורש טיפול היום</span></article>
+                <article class="card metric"><span class="label">תקציב מנוהל</span><strong class="number" id="budgetTotal">₪61.4M</strong><span class="delta">3 פרויקטים</span></article>
+                <article class="card metric"><span class="label">רווח צפוי</span><strong class="number" id="profitTotal">₪6.8M</strong><span class="delta bad">ירידה צפויה בפרויקט אחד</span></article>
+                <article class="card metric"><span class="label">חשבונות פתוחים</span><strong class="number">₪740K</strong><span class="delta good">אפשר להוציא החודש</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>פרויקטים</h2>
+                    <p>לחץ על פרויקט כדי לפתוח תמונת מצב, Profit Radar ושאלות AI לפי נתוני הדמו.</p>
+                  </div>
+                  <span class="pill blue">מרווח, לא עמוס</span>
+                </div>
+                <div class="projects" id="projects"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-alerts">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">התראות פתוחות</span><strong class="number" id="alertsCountMetric">0</strong><span class="delta bad">דורשות החלטה</span></article>
+                <article class="card metric"><span class="label">סיכון כספי</span><strong class="number">₪42K</strong><span class="delta bad">Profit Radar</span></article>
+                <article class="card metric"><span class="label">התראות זמן</span><strong class="number">2</strong><span class="delta gold">לו"ז ורכש</span></article>
+                <article class="card metric"><span class="label">נוצרו ע"י שגב</span><strong class="number">4</strong><span class="delta good">Always-On AI</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>התראות שגב</h2>
+                    <p>התראות חכמות שמחברות כסף, לו"ז, שטח, ספקים וחשבונות.</p>
+                  </div>
+                  <button class="btn primary" data-ai="היי שגב, תסכם לי את כל ההתראות הפתוחות">סכם התראות</button>
+                </div>
+                <div class="actions-list" id="alertsList"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-project">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">פרויקט נבחר</span><strong class="number" id="projectNameMetric">הרצליה</strong><span class="delta" id="clientMetric">כהן יזמות</span></article>
+                <article class="card metric"><span class="label">ביצוע</span><strong class="number" id="progressMetric">61%</strong><span class="delta">מול יעד 68%</span></article>
+                <article class="card metric"><span class="label">סיכון כסף</span><strong class="number">₪42K</strong><span class="delta bad">דורש טיפול</span></article>
+                <article class="card metric"><span class="label">איחור</span><strong class="number">6 ימים</strong><span class="delta bad">אלומיניום</span></article>
+              </div>
+              <div class="two">
+                <article class="card">
+                  <h2>פעולות קריטיות</h2>
+                  <div class="actions-list">
+                    <div class="action-item"><span>לקבל עדכון אספקה מספק האלומיניום</span><button class="btn" data-action="track">פתח</button></div>
+                    <div class="action-item"><span>לסגור אישור חריגים בגמרים</span><button class="btn" data-action="docApproval">פתח</button></div>
+                    <div class="action-item"><span>להכין חשבון חלקי לאחר עדכון ביצוע</span><button class="btn" data-action="bill">פתח</button></div>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>תמונת מנהל</h2>
+                  <p>הפרויקט מתקדם, אבל רווחיות השבוע נשחקת בגלל איחור באלומיניום וחריגה צפויה בגמרים. שגב ממליץ לטפל קודם באיחור, כי הוא משפיע גם על הלו"ז וגם על החשבון הבא.</p>
+                  <div class="site-weather">
+                    <div class="weather-temp">32°</div>
+                    <div>
+                      <strong>מזג אוויר באתר תל אביב</strong>
+                      <p>חם ושמשי. עבודות כבדות מומלץ לבצע בבוקר, עם מים והצללה לצוות.</p>
+                    </div>
+                  </div>
+                  <button class="btn dark" data-ai="היי שגב, מה הדבר הכי דחוף בפרויקט?">שאל מה דחוף</button>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-tasks">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">משימות פתוחות</span><strong class="number" id="openTasksMetric">0</strong><span class="delta">לפי פרויקט</span></article>
+                <article class="card metric"><span class="label">דחופות</span><strong class="number" id="urgentTasksMetric">0</strong><span class="delta bad">דורשות טיפול</span></article>
+                <article class="card metric"><span class="label">נפתחו ע"י שגב</span><strong class="number">3</strong><span class="delta good">מהמלצות AI</span></article>
+                <article class="card metric"><span class="label">נסגרו השבוע</span><strong class="number">9</strong><span class="delta good">מעקב ביצוע</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>משימות</h2>
+                    <p>כל המלצה, ליקוי, ספק או חשבון יכולים להפוך למשימה עם אחראי ותאריך יעד.</p>
+                  </div>
+                  <button class="btn primary" id="newTaskBtn">פתח משימה</button>
+                </div>
+                <table>
+                  <thead><tr><th>משימה</th><th>אחראי</th><th>תאריך יעד</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                  <tbody id="tasksBody"></tbody>
+                </table>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-team">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">אנשי צוות</span><strong class="number" id="teamCountMetric">0</strong><span class="delta">בכל הפרויקטים</span></article>
+                <article class="card metric"><span class="label">מנהלי עבודה</span><strong class="number">2</strong><span class="delta good">פעילים היום</span></article>
+                <article class="card metric"><span class="label">משתמשים מוגבלים</span><strong class="number">3</strong><span class="delta">צפייה בלבד</span></article>
+                <article class="card metric"><span class="label">בקשות גישה</span><strong class="number">1</strong><span class="delta gold">ממתינה לאישור</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>צוות והרשאות</h2>
+                    <p>מי רואה מה, מי יכול לעדכן ביצוע, ומי מאשר פעולות משמעותיות.</p>
+                  </div>
+                  <button class="btn primary" id="newTeamBtn">הוסף איש צוות</button>
+                </div>
+                <table>
+                  <thead><tr><th>שם</th><th>תפקיד</th><th>הרשאה</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                  <tbody id="teamBody"></tbody>
+                </table>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>כללי הרשאות</h2>
+                  <div class="actions-list">
+                    <div class="action-item"><span>מנהל יכול לאשר חשבון ושינוי תקציב</span><span class="pill green">מלא</span></div>
+                    <div class="action-item"><span>מנהל עבודה יכול לעדכן שטח וביצוע</span><span class="pill blue">עריכה</span></div>
+                    <div class="action-item"><span>לקוח רואה דוחות ואישורים בלבד</span><span class="pill gold">מוגבל</span></div>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>שגב AI לפי הרשאה</h2>
+                  <p>שגב מתאים תשובות לפי הרשאת המשתמש: בעלים רואה כסף ורווח, מנהל עבודה רואה שטח ומשימות, לקוח רואה דוח נקי בלבד.</p>
+                  <button class="btn dark" data-ai="היי שגב, מי יכול לאשר חשבון ושינוי תקציב?">שאל על הרשאות</button>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-boq">
+            <article class="card">
+              <div class="panel-head">
+                <div><h2>כתב כמויות</h2><p>טבלה נקייה, עם הסעיפים החשובים קודם וסיכון ברור לכל סעיף.</p></div>
+                <span class="pill gold">BOQ + ביצוע + כסף</span>
+              </div>
+              <table>
+                <thead><tr><th>סעיף</th><th>תקציב</th><th>ביצוע</th><th>יתרה</th><th>סטטוס</th></tr></thead>
+                <tbody>
+                  <tr><td>שלד</td><td>₪5.8M</td><td>92%</td><td>₪464K</td><td><span class="pill green">תקין</span></td></tr>
+                  <tr><td>אלומיניום</td><td>₪1.2M</td><td>38%</td><td>₪744K</td><td><span class="pill red">איחור</span></td></tr>
+                  <tr><td>גמרים</td><td>₪3.4M</td><td>51%</td><td>₪1.66M</td><td><span class="pill gold">חריגה צפויה</span></td></tr>
+                  <tr><td>חשמל</td><td>₪2.1M</td><td>57%</td><td>₪903K</td><td><span class="pill gold">חסר עדכון</span></td></tr>
+                </tbody>
+              </table>
+            </article>
+          </section>
+
+          <section class="view" id="view-schedule">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">סטטוס לו"ז</span><strong class="number">6 ימים</strong><span class="delta bad">איחור פעיל</span></article>
+                <article class="card metric"><span class="label">עלות זמן משוערת</span><strong class="number">₪42K</strong><span class="delta bad">נזק צפוי</span></article>
+                <article class="card metric"><span class="label">שלבים פתוחים 
