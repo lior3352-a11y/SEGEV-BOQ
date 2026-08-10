@@ -1,0 +1,296 @@
+          </section>
+
+          <section class="view" id="view-reports">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">דוחות מוכנים</span><strong class="number">5</strong><span class="delta good">עודכנו הבוקר</span></article>
+                <article class="card metric"><span class="label">דוחות ללקוח</span><strong class="number">3</strong><span class="delta">ממתינים לאישור</span></article>
+                <article class="card metric"><span class="label">חריגות פתוחות</span><strong class="number">₪42K</strong><span class="delta bad">ב-Profit Radar</span></article>
+                <article class="card metric"><span class="label">חשבונות לדוח</span><strong class="number">₪740K</strong><span class="delta good">אפשר לחייב</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>דוח בוקר מנהל</h2>
+                    <p>סיכום קצר שאפשר להדפיס, לשלוח או להקריא בקול דרך שגב AI.</p>
+                  </div>
+                  <div class="toolbar">
+                    <button class="btn" id="printReportBtn">הדפס / PDF</button>
+                    <button class="btn primary" id="generateReportBtn">שגב, צור סיכום</button>
+                  </div>
+                </div>
+                <div class="answer" id="reportText">
+                  דוח בוקר: פרויקט הרצליה בסיכון גבוה בגלל איחור של 6 ימים באלומיניום. הסיכון הכספי המשוער הוא 42,000 ש"ח. חשבונות פתוחים בסך 740,000 ש"ח. הפעולה הראשונה להיום: לקבל תאריך אספקה מאושר מספק האלומיניום ולעדכן חשבון חלקי.
+                </div>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>דוח ללקוח</h2>
+                  <p>נוסח נקי ללקוח, בלי עומס מקצועי פנימי.</p>
+                  <div class="actions-list">
+                    <div class="action-item"><span>סיכום התקדמות חודשי</span><button class="btn" data-ai="היי שגב, תכין לי דוח ללקוח על התקדמות הפרויקט">צור</button></div>
+                    <div class="action-item"><span>סיכום חריגים לאישור</span><button class="btn" data-ai="היי שגב, תסכם ללקוח את החריגים שצריך לאשר">צור</button></div>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>דוח פנימי</h2>
+                  <p>נוסח למנהל: איפה יש סיכון, מי אחראי ומה צריך להיסגר היום.</p>
+                  <div class="actions-list">
+                    <div class="action-item"><span>סיכוני רווח</span><button class="btn" data-ai="היי שגב, תן לי דוח פנימי על סיכוני רווח">צור</button></div>
+                    <div class="action-item"><span>ספקים בעיכוב</span><button class="btn" data-ai="היי שגב, תן לי דוח ספקים בעיכוב">צור</button></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-backup">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">שמירה מקומית</span><strong class="number">פעילה</strong><span class="delta good">בדפדפן הזה</span></article>
+                <article class="card metric"><span class="label">גרסת תוכנה</span><strong class="number">MVP</strong><span class="delta">Professional Demo</span></article>
+                <article class="card metric"><span class="label">עודכן לאחרונה</span><strong class="number" id="lastSavedMetric">עכשיו</strong><span class="delta">פרויקטים, שאלות ופעולות</span></article>
+                <article class="card metric"><span class="label">מצב גיבוי</span><strong class="number">מוכן</strong><span class="delta good">אפשר לייצא</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>גיבוי ושחזור</h2>
+                    <p>שומר Snapshot של נתוני הדמו: פרויקטים, שאלות ששגב למד, ופעולות שאושרו.</p>
+                  </div>
+                  <div class="toolbar">
+                    <button class="btn primary" id="exportBackupBtn">ייצא גיבוי</button>
+                    <button class="btn" id="importBackupBtn">ייבא גיבוי</button>
+                  </div>
+                </div>
+                <input id="backupFileInput" type="file" accept="application/json" style="display:none">
+                <div class="answer" id="backupSummary">
+                  הגיבוי הפנימי פעיל. נתונים חדשים נשמרים בדפדפן, ואפשר לייצא קובץ גיבוי חיצוני בכל רגע.
+                </div>
+              </article>
+
+              <article class="card">
+                <h2>מה נשמר</h2>
+                <div class="actions-list">
+                  <div class="action-item"><span>פרויקטים שנוספו בדמו</span><span class="pill green">נשמר</span></div>
+                  <div class="action-item"><span>שאלות חוזרות של שגב AI</span><span class="pill green">נשמר</span></div>
+                  <div class="action-item"><span>פעולות שאושרו על ידי המשתמש</span><span class="pill green">נשמר</span></div>
+                  <div class="action-item"><span>קובץ תוכנה ראשי וגיבויים חיצוניים</span><span class="pill blue">בוצע</span></div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-ai">
+            <article class="card">
+              <h2>מנוע למידת שאלות</h2>
+              <p>שגב לומד מה המשתמש שואל, מזהה דפוסים ומציע דוחות קבועים.</p>
+              <div class="learning" id="learningCards"></div>
+            </article>
+          </section>
+        </div>
+
+        <aside class="ai" aria-label="שגב AI">
+          <div class="ai-head">
+            <div>
+              <h2>שגב AI</h2>
+              <p>היי שגב, דבר עם הפרויקט.</p>
+            </div>
+            <button class="mic" id="micBtn" aria-label="הפעל מיקרופון" title="הפעל מיקרופון">◉</button>
+          </div>
+
+          <textarea id="question">היי שגב, מה מצב הפרויקט?</textarea>
+          <div class="toolbar">
+            <button class="btn dark" id="askBtn">שאל</button>
+            <button class="btn" id="speakBtn">ענה בקול</button>
+          </div>
+
+          <div class="answer" id="answer">היי ליאור. אני מוכן לענות על הפרויקט, התקציב, הלו"ז, הספקים והחשבונות.</div>
+
+          <div class="quick">
+            <button data-ai="היי שגב, מי בפיגור?">מי בפיגור?</button>
+            <button data-ai="היי שגב, כמה כסף אני בסיכון?">כמה כסף בסיכון?</button>
+            <button data-ai="היי שגב, מה מזג האוויר היום באתר בתל אביב?">מזג אוויר באתר</button>
+            <button data-ai="היי שגב, תכין לי דוח בוקר">דוח בוקר</button>
+          </div>
+
+          <div class="actions-list">
+            <div class="action-item"><span>פתח מעקב לספק האלומיניום</span><button class="btn" data-action="track">אשר</button></div>
+            <div class="action-item"><span>הכן חשבון חלקי</span><button class="btn" data-action="bill">אשר</button></div>
+          </div>
+
+          <div>
+            <div class="label">פעולות שאושרו</div>
+            <div class="log-list" id="actionLog"></div>
+          </div>
+        </aside>
+      </div>
+    
+
+<section class="view" id="view-monthly">
+  <div class="stack">
+    <article class="card">
+      <div class="panel-head"><div><h2>הגשת חשבון חודשי</h2><p>הכנת חשבון לפי כתב הכמויות, ביצוע קודם, ביצוע החודש ואישור מצטבר.</p></div><div class="toolbar"><button class="btn" id="newMonthlyBtn">חשבון חדש</button><button class="btn primary" id="submitMonthlyBtn">הגש חשבון</button></div></div>
+      <div class="metrics">
+        <article class="card metric"><span class="label">ביצוע מצטבר</span><strong class="number" id="monthlyCumulative">₪0</strong></article>
+        <article class="card metric"><span class="label">ביצוע קודם</span><strong class="number" id="monthlyPrevious">₪0</strong></article>
+        <article class="card metric"><span class="label">ביצוע החודש</span><strong class="number" id="monthlyCurrent">₪0</strong></article>
+        <article class="card metric"><span class="label">לתשלום כולל מע״מ</span><strong class="number" id="monthlyPayable">₪0</strong></article>
+      </div>
+      <div class="two" style="margin:16px 0">
+        <label>חודש חשבון <input id="monthlyPeriod" type="month"></label>
+        <label>סטטוס <input id="monthlyStatus" value="טיוטה" readonly></label>
+      </div>
+      <div style="overflow:auto"><table><thead><tr><th>סעיף</th><th>תיאור</th><th>כמות חוזית</th><th>מחיר יחידה</th><th>קודם</th><th>החודש</th><th>מצטבר</th><th>סכום החודש</th></tr></thead><tbody id="monthlyRows"></tbody></table></div>
+      <div class="two" style="margin-top:18px">
+        <article class="card"><h3>התאמות</h3><label>חריגים / תוספות ₪ <input id="monthlyExtras" type="number" value="0"></label><label>קיזוזים ₪ <input id="monthlyDeductions" type="number" value="0"></label><label>עיכבון % <input id="monthlyRetention" type="number" value="5"></label><label>מע״מ % <input id="monthlyVat" type="number" value="18"></label></article>
+        <article class="card"><h3>סיכום ואישור</h3><div class="log-list" id="monthlySummary"></div><label>הערות / אסמכתאות <textarea id="monthlyNotes" placeholder="הערות לחשבון, תמונות, חריגים ואסמכתאות"></textarea></label><div class="toolbar"><button class="btn" id="monthlyReturnBtn">החזר לתיקון</button><button class="btn primary" id="monthlyApproveBtn">אשר חשבון</button><button class="btn dark" id="monthlyPaidBtn">סמן כשולם</button></div></article>
+      </div>
+    </article>
+    <article class="card"><div class="panel-head"><div><h2>היסטוריית חשבונות</h2><p>טיוטה → הוגש → בבדיקה → אושר → שולם.</p></div></div><div style="overflow:auto"><table><thead><tr><th>חודש</th><th>הוגש</th><th>אושר</th><th>שולם</th><th>סטטוס</th></tr></thead><tbody id="monthlyHistory"></tbody></table></div></article>
+    <article class="card">
+      <div class="panel-head"><div><h2>חשבונות קבלני משנה החודש</h2><p>הוצאות ביצוע חודשיות שמקוזזות מול החשבון שהוגש ללקוח.</p></div><button class="btn primary" id="addSubBillBtn">הוסף חשבון קבלן משנה</button></div>
+      <div style="overflow:auto"><table><thead><tr><th>קבלן / ספק</th><th>תחום</th><th>סכום</th><th>סטטוס</th><th>פעולה</th></tr></thead><tbody id="subBillsTable"></tbody></table></div>
+      <div class="log-item" style="margin-top:12px">סה״כ חשבונות קבלני משנה: <strong id="subBillsTotal">₪0</strong></div>
+    </article>
+  </div>
+</section>
+
+<section class="view" id="view-buyers">
+  <div class="stack">
+    <article class="card"><div class="panel-head"><div><h2>רוכשים ורישיונות</h2><p>מסך מנהל־על: רישום רוכשים, קודי הפעלה, תשלומים ותוקף שימוש.</p></div><button class="btn primary" id="newBuyerBtn">רוכש חדש</button></div>
+    <div class="metrics"><article class="card metric"><span class="label">פעילים</span><strong class="number" id="buyersActive">0</strong></article><article class="card metric"><span class="label">עומדים לפוג</span><strong class="number" id="buyersSoon">0</strong></article><article class="card metric"><span class="label">פג תוקף</span><strong class="number" id="buyersExpired">0</strong></article><article class="card metric"><span class="label">סה״כ רוכשים</span><strong class="number" id="buyersTotal">0</strong></article></div>
+    <div style="overflow:auto"><table><thead><tr><th>רוכש / חברה</th><th>טלפון / אימייל</th><th>חבילה</th><th>תשלום</th><th>קוד הפעלה</th><th>תוקף</th><th>סטטוס</th><th>פעולות</th></tr></thead><tbody id="buyersTable"></tbody></table></div></article>
+  </div>
+</section>
+
+</main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div><h2>פרויקט חדש</h2><p>הפרויקט יישמר בדפדפן בדמו המקומי.</p></div>
+        <button class="btn" id="closeModal">סגור</button>
+      </div>
+      <div class="form">
+        <label>שם פרויקט <input id="newName" value="פרויקט נתניה"></label>
+        <label>לקוח <input id="newClient" value="אבני דרך יזמות"></label>
+        <label>תקציב <input id="newBudget" value="19000000"></label>
+        <label>רווח צפוי <input id="newProfit" value="2200000"></label>
+      </div>
+      <button class="btn primary" id="saveProject">שמור והצג</button>
+    </div>
+  </div>
+
+  <div class="modal" id="supplierModal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div><h2>הוסף ספק</h2><p>הספק יישמר בדפדפן ויופיע ברשימת הספקים.</p></div>
+        <button class="btn" id="closeSupplierModal">סגור</button>
+      </div>
+      <div class="form">
+        <label>שם ספק <input id="supplierName" value="ספק חדש"></label>
+        <label>תחום <input id="supplierTrade" value="אינסטלציה"></label>
+        <label>תאריך יעד <input id="supplierDue" value="30.08.2026"></label>
+        <label>סטטוס <input id="supplierStatus" value="חדש למעקב"></label>
+      </div>
+      <button class="btn primary" id="saveSupplier">שמור ספק</button>
+    </div>
+  </div>
+
+  <div class="modal" id="clientModal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div><h2>הוסף לקוח</h2><p>הלקוח יישמר בדפדפן ויופיע במרכז הלקוחות.</p></div>
+        <button class="btn" id="closeClientModal">סגור</button>
+      </div>
+      <div class="form">
+        <label>שם לקוח <input id="clientPersonName" value="לקוח חדש"></label>
+        <label>חברה <input id="clientCompanyName" value="חברת בנייה"></label>
+        <label>מייל <input id="clientEmail" value="client@example.com"></label>
+        <label>סטטוס <input id="clientStatus" value="נשלחה מצגת"></label>
+        <label>פעולה הבאה <input id="clientNextAction" value="שיחת המשך"></label>
+      </div>
+      <button class="btn primary" id="saveClient">שמור לקוח</button>
+    </div>
+  </div>
+
+  <div class="modal" id="taskModal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div><h2>פתח משימה</h2><p>המשימה תישמר בדפדפן ותופיע במסך המשימות.</p></div>
+        <button class="btn" id="closeTaskModal">סגור</button>
+      </div>
+      <div class="form">
+        <label>משימה <input id="taskTitle" value="לקבל תאריך אספקה מאושר"></label>
+        <label>אחראי <input id="taskOwner" value="ספק האלומיניום"></label>
+        <label>תאריך יעד <input id="taskDue" value="14.08.2026"></label>
+        <label>סטטוס <input id="taskStatus" value="דחוף"></label>
+      </div>
+      <button class="btn primary" id="saveTask">שמור משימה</button>
+    </div>
+  </div>
+
+  <div class="modal" id="teamModal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div><h2>הוסף איש צוות</h2><p>איש הצוות יישמר בדפדפן ויופיע במסך צוות והרשאות.</p></div>
+        <button class="btn" id="closeTeamModal">סגור</button>
+      </div>
+      <div class="form">
+        <label>שם <input id="teamName" value="איש צוות חדש"></label>
+        <label>תפקיד <input id="teamRole" value="מנהל עבודה"></label>
+        <label>הרשאה <input id="teamPermission" value="עריכה"></label>
+        <label>סטטוס <input id="teamStatus" value="פעיל"></label>
+      </div>
+      <button class="btn primary" id="saveTeam">שמור איש צוות</button>
+    </div>
+  </div>
+
+  <div class="modal" id="approvalModal">
+    <div class="dialog">
+      <div class="panel-head">
+        <div>
+          <h2>אישור פעולה של שגב AI</h2>
+          <p id="approvalText">לאשר פעולה?</p>
+        </div>
+        <button class="btn" id="cancelApproval">בטל</button>
+      </div>
+      <button class="btn primary" id="confirmApproval">אשר ושמור פעולה</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="demo-guide" id="demoGuide" aria-live="polite">
+    <span class="demo-step-count" id="demoStepCount">שלב 1 מתוך 6</span>
+    <h3 id="demoStepTitle">מרכז פיקוד</h3>
+    <p id="demoStepText">מתחילים במסך בעלים שמראה איפה הכסף, הזמן והסיכון דורשים החלטה.</p>
+    <div class="toolbar">
+      <button class="btn" id="closeDemoBtn">סגור</button>
+      <button class="btn primary" id="nextDemoBtn">המשך</button>
+    </div>
+  </div>
+
+  
+
+<div class="modal" id="subBillModal"><div class="dialog"><div class="panel-head"><div><h2>חשבון קבלן משנה</h2><p>רישום הוצאה חודשית מול החשבון ללקוח.</p></div><button class="btn" id="closeSubBillModal">סגור</button></div>
+<div class="form"><label>קבלן / ספק <input id="subBillName" value="קבלן משנה"></label><label>תחום <input id="subBillTrade" value="גמרים"></label><label>סכום ₪ <input id="subBillAmount" type="number" value="0"></label><label>סטטוס <input id="subBillStatus" value="בבדיקה"></label></div>
+<button class="btn primary" id="saveSubBillBtn">שמור חשבון</button></div></div>
+
+<div class="modal" id="buyerModal"><div class="dialog"><div class="panel-head"><div><h2>רוכש חדש</h2><p>פרטי רכישה ורישיון.</p></div><button class="btn" id="closeBuyerModal">סגור</button></div><div class="form">
+<label>שם מלא <input id="buyerName"></label><label>חברה <input id="buyerCompany"></label><label>ח.פ./עוסק <input id="buyerCompanyId"></label><label>טלפון <input id="buyerPhone"></label><label>אימייל <input id="buyerEmail"></label><label>חבילה <input id="buyerPlan" value="שנתי"></label><label>מחיר ששולם <input id="buyerPaid" value="0"></label><label>סטטוס תשלום <input id="buyerPayment" value="שולם"></label><label>חודשים <input id="buyerMonths" value="12"></label><label>מספר משתמשים <input id="buyerSeats" value="5"></label></div><button class="btn primary" id="saveBuyerBtn">שמור והנפק קוד</button></div></div>
+
+<script>
+    const pageMap = {
+      monthly: ["הגשת חשבון חודשי", "חשבון ביצוע חודשי המחובר ל-BOQ, אישורים, תזרים ו-Profit Radar."],
+      buyers: ["רוכשים ורישיונות", "ניהול מסחרי: לקוחות, קודי הפעלה, תשלומים, תוקף וחידושים."],
+      owner: ["מרכז פיקוד לבעלים", "מסך מרווח שמראה רק את מה שדורש החלטה: כסף, זמן, סיכון ופעולה."],
+      alerts: ["התראות שגב", "Always-On AI שמזהה סיכונים ופותח פעולה לפני שמפסידים כסף."],
+      project: ["תמונת פרויקט", "החלטות יומיות על פרויקט אחד: ביצוע, איחורים, כסף ופעולות."],
+      tasks: ["משימות", "המלצות שגב, ליקויי שטח, ספקים וחשבונות הופכים למשימות לביצוע."],
+      team: ["צוות והרשאות", "תפקידים, הרשאות ואחריות כדי שכל פעולה תגיע לאדם הנכו
