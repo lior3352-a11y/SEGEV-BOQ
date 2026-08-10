@@ -1,0 +1,293 @@
+</span><strong class="number">4</strong><span class="delta">2 דורשים עדכון</span></article>
+                <article class="card metric"><span class="label">תאריך יעד</span><strong class="number">15.12</strong><span class="delta">2026</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>לו"ז / Gantt</h2>
+                    <p>תצוגה מרווחת של שלבי הפרויקט, עם חיבור ישיר לעלות האיחור.</p>
+                  </div>
+                  <button class="btn primary" data-ai="היי שגב, איזה איחור עולה לי כסף?">שאל על איחור</button>
+                </div>
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <strong>שלד</strong>
+                    <div class="timeline-track done"><span style="width:92%"></span></div>
+                    <span class="pill green">כמעט סגור</span>
+                  </div>
+                  <div class="timeline-item">
+                    <strong>אלומיניום</strong>
+                    <div class="timeline-track late"><span style="width:38%"></span></div>
+                    <span class="pill red">מאחר 6 ימים</span>
+                  </div>
+                  <div class="timeline-item">
+                    <strong>חשמל</strong>
+                    <div class="timeline-track warn"><span style="width:57%"></span></div>
+                    <span class="pill gold">חסר עדכון</span>
+                  </div>
+                  <div class="timeline-item">
+                    <strong>גמרים</strong>
+                    <div class="timeline-track warn"><span style="width:51%"></span></div>
+                    <span class="pill gold">בסיכון</span>
+                  </div>
+                </div>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>Time-to-Money</h2>
+                  <p>כל יום איחור באלומיניום מוערך בכ-₪7,000 השפעה עקיפה: דחיית חיפוי, עיכוב גמרים ופגיעה בחשבון החודשי.</p>
+                  <button class="btn dark" data-ai="היי שגב, מה יקרה אם האיחור יימשך עוד שבוע?">חשב שבוע נוסף</button>
+                </article>
+                <article class="card">
+                  <h2>פעולות לו"ז</h2>
+                  <div class="actions-list">
+                    <div class="action-item"><span>דרוש תאריך אספקה מאושר מאלומיניום</span><button class="btn" data-action="scheduleTrack">אשר</button></div>
+                    <div class="action-item"><span>עדכן תחילת גמרים לפי איחור האלומיניום</span><button class="btn" data-action="scheduleUpdate">אשר</button></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-field">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">דיווחי שטח היום</span><strong class="number">7</strong><span class="delta good">4 נסגרו</span></article>
+                <article class="card metric"><span class="label">ליקויים פתוחים</span><strong class="number">3</strong><span class="delta bad">1 משפיע לו"ז</span></article>
+                <article class="card metric"><span class="label">תמונות אתר</span><strong class="number">18</strong><span class="delta">נוספו השבוע</span></article>
+                <article class="card metric"><span class="label">השפעה על חשבון</span><strong class="number">₪120K</strong><span class="delta good">ניתן לחיוב</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>פיקוח שטח</h2>
+                    <p>דיווח יומי, תמונות, ליקויים וביצוע שמתחברים לכתב הכמויות ולחשבונות.</p>
+                  </div>
+                  <button class="btn primary" data-ai="היי שגב, תסכם לי מה קרה היום בשטח">סכם יום שטח</button>
+                </div>
+                <div class="field-grid">
+                  <div class="field-note">
+                    <div>
+                      <span class="pill green">בוצע</span>
+                      <h3>יציקת קורה בקומה 3</h3>
+                      <p>דווח 100% ביצוע. שגב מציע לעדכן BOQ ולכלול בחשבון החודשי.</p>
+                    </div>
+                    <div class="photo-placeholder">תמונת אתר</div>
+                  </div>
+                  <div class="field-note">
+                    <div>
+                      <span class="pill red">ליקוי</span>
+                      <h3>עיכוב אלומיניום בחזית מערבית</h3>
+                      <p>אין אספקה באתר. משפיע על חיפוי וגמרים. נפתח סיכון ב-Profit Radar.</p>
+                    </div>
+                    <div class="photo-placeholder">תיעוד ליקוי</div>
+                  </div>
+                  <div class="field-note">
+                    <div>
+                      <span class="pill gold">חסר עדכון</span>
+                      <h3>קבלן חשמל</h3>
+                      <p>דווח ביצוע חלקי ללא אחוז סופי. שגב ממליץ לבקש עדכון לפני חשבון.</p>
+                    </div>
+                    <div class="photo-placeholder">בדיקת ביצוע</div>
+                  </div>
+                </div>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>פעולות שטח</h2>
+                  <div class="actions-list">
+                    <div class="action-item"><span>עדכן BOQ לפי יציקת קומה 3</span><button class="btn" data-action="fieldBoq">אשר</button></div>
+                    <div class="action-item"><span>פתח ליקוי לספק האלומיניום</span><button class="btn" data-action="fieldDefect">אשר</button></div>
+                    <div class="action-item"><span>בקש עדכון ביצוע מקבלן חשמל</span><button class="btn" data-action="fieldElectric">אשר</button></div>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>שגב מחבר שטח לכסף</h2>
+                  <p>דיווח שטח לא נשאר תמונה או הערה. הוא מעדכן ביצוע, פותח סיכון, משפיע על החשבון ומכין פעולה למנהל.</p>
+                  <button class="btn dark" data-ai="היי שגב, איזה דיווח שטח משפיע לי על הכסף?">מה משפיע על הכסף?</button>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-documents">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">מסמכים בפרויקט</span><strong class="number">42</strong><span class="delta">תוכניות, חוזים ואישורים</span></article>
+                <article class="card metric"><span class="label">תוכניות לבדיקה</span><strong class="number">6</strong><span class="delta gold">2 דורשות השוואה</span></article>
+                <article class="card metric"><span class="label">RFI פתוחים</span><strong class="number">4</strong><span class="delta bad">1 מעכב ביצוע</span></article>
+                <article class="card metric"><span class="label">גרסה אחרונה</span><strong class="number">A-14</strong><span class="delta good">עודכן היום</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>מסמכים ותוכניות</h2>
+                    <p>ניהול תוכניות, חוזים, אישורים ושאלות תכנון שמתחברות לשטח, BOQ וחשבונות.</p>
+                  </div>
+                  <button class="btn primary" data-ai="היי שגב, מה השתנה בתוכנית האחרונה?">שאל על תוכנית</button>
+                </div>
+                <table>
+                  <thead><tr><th>מסמך</th><th>סוג</th><th>גרסה</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                  <tbody>
+                    <tr><td>תוכנית אלומיניום חזית מערבית</td><td>תוכנית</td><td>A-14</td><td><span class="pill red">פער מול שטח</span></td><td><button class="btn" data-ai="היי שגב, תסביר את הפער בתוכנית האלומיניום">בדוק</button></td></tr>
+                    <tr><td>חוזה קבלן חשמל</td><td>חוזה</td><td>חתום</td><td><span class="pill green">תקין</span></td><td><button class="btn" data-action="docOpen">פתח</button></td></tr>
+                    <tr><td>אישור חריגים גמרים</td><td>אישור</td><td>טיוטה</td><td><span class="pill gold">ממתין לקוח</span></td><td><button class="btn" data-action="docApproval">בקש אישור</button></td></tr>
+                    <tr><td>RFI-018 פרט חיפוי</td><td>RFI</td><td>פתוח</td><td><span class="pill red">מעכב</span></td><td><button class="btn" data-action="docRfi">שלח תזכורת</button></td></tr>
+                  </tbody>
+                </table>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>קריאת תוכניות עם AI</h2>
+                  <p>ב-MVP שגב מציג ניתוח דמו לפי תוכנית לדוגמה. בשלב הבא נחבר PDF/OCR, ו-DWG ידרוש מנוע CAD חיצוני.</p>
+                  <div class="actions-list">
+                    <div class="action-item"><span>השווה גרסה A-13 מול A-14</span><button class="btn" data-ai="היי שגב, תשווה בין גרסת תוכנית קודמת לחדשה">השווה</button></div>
+                    <div class="action-item"><span>הוצא סעיפים ל-BOQ מתוך תוכנית</span><button class="btn" data-action="docToBoq">אשר</button></div>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>גבולות MVP</h2>
+                  <p>PDF/OCR ייכנסו בשלב נפרד. DWG לא ייתמך ישירות בשלב הזה. תצוגת bulge יכולה להיות קו ישר, אבל חישוב האורך ישמור קשת אמיתית.</p>
+                  <button class="btn dark" data-ai="היי שגב, מה גבולות קריאת התוכניות ב-MVP?">שאל גבולות MVP</button>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-radar">
+            <div class="two">
+              <article class="card">
+                <h2>Profit Radar</h2>
+                <p>הרדאר מתרגם זמן, ספקים וכתב כמויות לכסף.</p>
+                <div class="risk-row"><span>כסף</span><div class="risk-bar red"><span style="width:78%"></span></div><strong>₪42K</strong></div>
+                <div class="risk-row"><span>לו"ז</span><div class="risk-bar gold"><span style="width:64%"></span></div><strong>6 ימים</strong></div>
+                <div class="risk-row"><span>ספקים</span><div class="risk-bar blue"><span style="width:52%"></span></div><strong>2</strong></div>
+                <div class="log-list" style="margin-top:18px">
+                  <div class="log-item">חשבונות שאושרו: <strong id="radarApprovedIncome">₪0</strong></div>
+                  <div class="log-item">כסף שנגבה בפועל: <strong id="radarPaidIncome">₪0</strong></div>
+                  <div class="log-item">חשבונות קבלני משנה: <strong id="radarSubcontractorCost">₪0</strong></div>
+                  <div class="log-item">תזרים נטו מחשבונות: <strong id="radarNetCash">₪0</strong></div>
+                  <div class="log-item">רווח חודשי מוערך לאחר קבלני משנה: <strong id="radarMonthlyMargin">₪0</strong></div>
+                </div>
+              </article>
+              <article class="card">
+                <h2>המלצת שגב</h2>
+                <p>לטפל קודם בספק האלומיניום. אם האיחור יימשך עוד שבוע, הסיכון הכספי יעלה לכ-₪68K וידחה את שלב החיפוי.</p>
+                <button class="btn primary" data-action="task">פתח משימה באישור</button>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-suppliers">
+            <article class="card">
+              <div class="panel-head">
+                <div>
+                  <h2>ספקים וקבלני משנה</h2>
+                  <p>ניהול ספקים, קבלני משנה, אספקות ופעולות המשך.</p>
+                </div>
+                <button class="btn primary" id="newSupplierBtn">הוסף ספק</button>
+              </div>
+              <table>
+                <thead><tr><th>ספק</th><th>תחום</th><th>תאריך יעד</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                <tbody id="suppliersBody"></tbody>
+              </table>
+            </article>
+          </section>
+
+          <section class="view" id="view-procurement">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">הזמנות פתוחות</span><strong class="number">12</strong><span class="delta">₪1.8M</span></article>
+                <article class="card metric"><span class="label">הצעות להשוואה</span><strong class="number">5</strong><span class="delta gold">2 דחופות</span></article>
+                <article class="card metric"><span class="label">אספקות בסיכון</span><strong class="number">2</strong><span class="delta bad">אלומיניום וחשמל</span></article>
+                <article class="card metric"><span class="label">חיסכון אפשרי</span><strong class="number">₪86K</strong><span class="delta good">בהשוואת הצעות</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>רכש והזמנות</h2>
+                    <p>מעקב הזמנות, הצעות מחיר ואספקות שמתחברים ישירות ללו"ז ול-Profit Radar.</p>
+                  </div>
+                  <button class="btn primary" data-ai="היי שגב, איזה רכש מסכן את הפרויקט?">שאל על רכש</button>
+                </div>
+                <table>
+                  <thead><tr><th>פריט</th><th>ספק</th><th>סכום</th><th>תאריך אספקה</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                  <tbody>
+                    <tr><td>אלומיניום חזית מערבית</td><td>אלום השרון</td><td>₪420K</td><td>18.08.2026</td><td><span class="pill red">בסיכון</span></td><td><button class="btn" data-action="purchaseChase">דרוש עדכון</button></td></tr>
+                    <tr><td>לוחות חשמל</td><td>חשמל הדר</td><td>₪180K</td><td>12.08.2026</td><td><span class="pill gold">חסר אישור</span></td><td><button class="btn" data-action="purchaseApprove">אשר</button></td></tr>
+                    <tr><td>ריצוף לובי</td><td>גמרים פלוס</td><td>₪96K</td><td>25.08.2026</td><td><span class="pill green">בדרך</span></td><td><button class="btn" data-action="purchaseOpen">פתח</button></td></tr>
+                  </tbody>
+                </table>
+              </article>
+
+              <div class="two">
+                <article class="card">
+                  <h2>השוואת הצעות</h2>
+                  <p>שגב מזהה פער של ₪86K בין שתי הצעות אלומיניום, אבל ההצעה הזולה מוסיפה 9 ימי אספקה ולכן עלולה לשחוק רווח.</p>
+                  <button class="btn dark" data-ai="היי שגב, איזו הצעת מחיר עדיפה אם מחשבים גם זמן?">חשב זמן מול מחיר</button>
+                </article>
+                <article class="card">
+                  <h2>פעולות רכש</h2>
+                  <div class="actions-list">
+                    <div class="action-item"><span>פתח הזמנת רכש לאלומיניום לאחר אישור בעלים</span><button class="btn" data-action="purchaseOrder">אשר</button></div>
+                    <div class="action-item"><span>שלח בקשה להצעת מחיר נוספת לגמרים</span><button class="btn" data-action="purchaseQuote">אשר</button></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="view-clients">
+            <div class="stack">
+              <div class="metrics">
+                <article class="card metric"><span class="label">לקוחות במעקב</span><strong class="number">8</strong><span class="delta">3 אחרי שליחת מצגת</span></article>
+                <article class="card metric"><span class="label">פגישות פתוחות</span><strong class="number">4</strong><span class="delta good">2 השבוע</span></article>
+                <article class="card metric"><span class="label">פיילוטים</span><strong class="number">2</strong><span class="delta">פרויקט אחד לכל לקוח</span></article>
+                <article class="card metric"><span class="label">שווי הזדמנויות</span><strong class="number">₪186K</strong><span class="delta good">שנתי צפוי</span></article>
+              </div>
+
+              <article class="card">
+                <div class="panel-head">
+                  <div>
+                    <h2>מרכז לקוחות</h2>
+                    <p>מקום אחד לשליחת מצגת, מעקב לקוחות והתקדמות לפיילוט.</p>
+                  </div>
+                  <div class="toolbar">
+                    <button class="btn" id="newClientBtn">הוסף לקוח</button>
+                    <button class="btn primary" id="sendPresentationBtn">שלח מצגת ללקוח</button>
+                  </div>
+                </div>
+                <table>
+                  <thead><tr><th>לקוח</th><th>חברה</th><th>סטטוס</th><th>פעולה הבאה</th><th>שגב AI</th></tr></thead>
+                  <tbody id="clientsBody"></tbody>
+                </table>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-accounts">
+            <div class="two">
+              <article class="card">
+                <h2>חשבונות פתוחים</h2>
+                <table>
+                  <thead><tr><th>פרויקט</th><th>סכום</th><th>סטטוס</th><th>פעולה</th></tr></thead>
+                  <tbody>
+                    <tr><td>הרצליה</td><td>₪420K</td><td><span class="pill gold">חסר עדכון ביצוע</span></td><td><button class="btn" data-action="bill">הכן</button></td></tr>
+                    <tr><td>תל אביב</td><td>₪210K</td><td><span class="pill green">מוכן לשליחה</span></td><td><button class="btn" data-action="sendBill">שלח</button></td></tr>
+                    <tr><td>רעננה</td><td>₪110K</td><td><span class="pill blue">טיוטה</span></td><td><button class="btn" data-action="openDetail">פתח</button></td></tr>
+                  </tbody>
+                </table>
+              </article>
+              <article class="card">
+                <h2>שגב מסביר כסף</h2>
+                <p>המערכת מחברת אחוזי ביצוע, חריגים וכתב כמויות לחשבון חודשי. לפני שליחה ללקוח, שגב מבקש אישור.</p>
+                <button class="btn dark" data-ai="היי שגב, מה חסר כדי להוציא חשבון החודש?">מה חסר לחשבון?</button>
+              </article>
+            </div>
