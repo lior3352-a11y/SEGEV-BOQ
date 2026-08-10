@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SEGEV BOQ — Profit Radar 2.0</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071526;color:#eaf4ff;font-family:Arial,sans-serif}.wrap{max-width:1280px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}.brand h1{margin:0;font-size:30px}.brand p{margin:7px 0;color:#9fb3c8}.badge{background:#123456;border:1px solid #2869a4;padding:10px 14px;border-radius:999px;color:#7dc4ff}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.card{background:linear-gradient(145deg,#0c2036,#0a192b);border:1px solid #193b5a;border-radius:18px;padding:20px;box-shadow:0 15px 35px #0004}.label{color:#91a9bf;font-size:14px}.num{font-size:29px;font-weight:800;margin:9px 0}.good{color:#48dfa0}.warn{color:#ffbf4b}.bad{color:#ff6673}.grid{display:grid;grid-template-columns:1.4fr .8fr;gap:16px;margin-top:16px}.risk{display:grid;grid-template-columns:1fr auto;gap:8px;padding:16px 0;border-bottom:1px solid #173650}.risk:last-child{border:0}.risk h3{margin:0 0 6px}.risk p{margin:0;color:#a9bdd0}.money{font-size:22px;font-weight:800}.action{margin-top:9px;background:#102e49;border-radius:12px;padding:10px;color:#cfe9ff}.bar{height:10px;background:#142b40;border-radius:20px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#ffbf4b,#ff6673)}.summary{font-size:18px;line-height:1.7}.button{border:0;border-radius:12px;padding:12px 16px;background:#1689e8;color:white;font-weight:700;cursor:pointer}.button:hover{filter:brightness(1.1)}.footer{margin-top:16px;color:#718da7;font-size:13px}@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}@media(max-width:520px){.metrics{grid-template-columns:1fr}}
+</style></head>
+<body><div class="wrap">
+<div class="top"><div class="brand"><h1>Profit Radar 2.0</h1><p>SEGEV BOQ · Construction Profit Intelligence</p></div><span class="badge">גרסת פיתוח — לא משפיעה על המערכת החיה</span></div>
+<div class="metrics">
+<div class="card"><div class="label">רווח חוזי</div><div class="num">₪1.84M</div><div class="good">18.4%</div></div>
+<div class="card"><div class="label">רווח נוכחי</div><div class="num">₪1.61M</div><div class="warn">16.1% · ירידה 2.3%</div></div>
+<div class="card"><div class="label">רווח צפוי בסיום</div><div class="num">₪1.49M</div><div class="bad">14.9% · אם אין פעולה</div></div>
+<div class="card"><div class="label">כסף בסיכון</div><div class="num bad">₪352K</div><div class="bad">3 מוקדים דורשים טיפול</div></div>
+<div class="card"><div class="label">שחיקת רווח צפויה</div><div class="num bad">₪350K</div><div class="bad">3.5 נקודות אחוז</div></div>
+</div>
+<div class="grid">
+<section class="card"><h2>שלושת הסיכונים שמורידים את הרווח</h2>
+<div class="risk"><div><h3>1. איחור אלומיניום — 6 ימים</h3><p>דוחה חיפוי וגמרים ופוגע בקצב החיוב החודשי.</p><div class="bar"><span style="width:88%"></span></div><div class="action">פעולה מומלצת: לקבל היום תאריך אספקה מחייב ולבחון פיצול אספקה.</div></div><div class="money bad">₪168K</div></div>
+<div class="risk"><div><h3>2. קבלני משנה — חריגה מול תקציב</h3><p>חשבונות מאושרים גבוהים מהקצב המתוכנן ביחס לביצוע.</p><div class="bar"><span style="width:62%"></span></div><div class="action">פעולה מומלצת: לעצור אישור חריגים ללא התאמה ל-BOQ ולבדוק 3 חשבונות אחרונים.</div></div><div class="money warn">₪112K</div></div>
+<div class="risk"><div><h3>3. חריגים שטרם אושרו ללקוח</h3><p>עבודה שבוצעה אך עדיין אינה מגובה באישור לחיוב.</p><div class="bar"><span style="width:44%"></span></div><div class="action">פעולה מומלצת: להגיש לאישור לפני סגירת החשבון החודשי.</div></div><div class="money warn">₪72K</div></div>
+</section>
+<aside class="card"><h2>שגב — מה לעשות היום?</h2><div class="summary"><strong>הבעיה הראשונה:</strong> אלומיניום.<br><br>אם האיחור נמשך עוד שבוע, החשיפה יכולה לעלות בכ־<strong class="bad">₪49K</strong> נוספים והרווח הצפוי לרדת לכ־<strong>14.4%</strong>.<br><br><strong>סדר פעולות:</strong><br>1. סגור תאריך אספקה.<br>2. אשר רק הוצאות שמחוברות לביצוע.<br>3. הגש חריגים פתוחים בחשבון הקרוב.</div><br><button class="button" onclick="document.getElementById('decision').textContent='משימה נפתחה: טיפול באלומיניום הוגדר בעדיפות עליונה להיום.'">פתח פעולה מומלצת</button><p id="decision" class="good"></p></aside>
+</div>
+<div class="grid"><section class="card"><h2>Time-to-Money</h2><p class="summary">כל יום נוסף של איחור באלומיניום מוערך בכ־<strong class="bad">₪7,000</strong> חשיפה עקיפה. שבוע נוסף = כ־<strong class="bad">₪49,000</strong> וסיכון נוסף לחשבון החודשי.</p></section><section class="card"><h2>חיבור למערכת</h2><p class="summary">בשלב החיבור, הנתונים יוזנו אוטומטית מ־BOQ, חשבון חודשי, קבלני משנה, תזרים וגאנט — במקום מספרי הדמו במסך זה.</p></section></div>
+<div class="footer">Profit Radar 2.0 · Development Prototype · SEGEV BOQ</div>
+</div></body></html>
