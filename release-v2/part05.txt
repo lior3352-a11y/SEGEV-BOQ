@@ -1,0 +1,326 @@
+ן."],
+      boq: ["כתב כמויות", "BOQ שמחובר לביצוע, תקציב וסיכון."],
+      schedule: ["לו\"ז / Gantt", "הקשר בין שלבי הפרויקט, איחור בשטח והשפעה כספית."],
+      field: ["פיקוח שטח", "דיווחים, ליקויים ותיעוד שמתחברים ל-BOQ, חשבונות ו-Profit Radar."],
+      documents: ["מסמכים ותוכניות", "תוכניות, חוזים, RFI ואישורים שמתחברים לשטח ול-BOQ."],
+      radar: ["Profit Radar", "איפה הזמן הופך לכסף ואיפה הרווח נשחק."],
+      suppliers: ["ספקים וקבלני משנה", "מי מעכב, מי חסר עדכון ומה צריך לעשות היום."],
+      procurement: ["רכש והזמנות", "הזמנות, הצעות מחיר ואספקות שמחברות מחיר, זמן וסיכון."],
+      clients: ["מרכז לקוחות", "מצגת, דמו, מעקב לקוחות והתקדמות לפיילוט במקום אחד."],
+      accounts: ["חשבונות ותשלומים", "מה אפשר לחייב, מה חסר, ומה מוכן לשליחה ללקוח."],
+      reports: ["דוחות", "דוח בוקר, דוח ללקוח וסיכום פנימי שמתחברים לשגב AI."],
+      backup: ["גיבוי ושחזור", "ייצוא Snapshot של הדמו ושחזור נתונים אם הדפדפן או המחשב נסגרים."],
+      ai: ["שגב AI", "מדברים עם הפרויקט, מקבלים תשובות ולומדים את השאלות."]
+    };
+
+    const defaultProjects = [
+      { name: "פרויקט הרצליה", client: "כהן יזמות", budget: 22400000, profit: 2450000, progress: 61, risk: "red", riskText: "סיכון גבוה" },
+      { name: "פרויקט תל אביב", client: "רמות ביצוע", budget: 18000000, profit: 2300000, progress: 44, risk: "gold", riskText: "דורש מעקב" },
+      { name: "פרויקט רעננה", client: "אלון נכסים", budget: 21000000, profit: 2050000, progress: 78, risk: "green", riskText: "תקין" }
+    ];
+
+    const defaultSuppliers = [
+      { name: "אלום השרון", trade: "אלומיניום", due: "18.08.2026", status: "מאחר", risk: "red" },
+      { name: "חשמל הדר", trade: "חשמל", due: "12.08.2026", status: "חסר עדכון", risk: "gold" },
+      { name: "גמרים פלוס", trade: "גמרים", due: "25.08.2026", status: "תקין", risk: "green" }
+    ];
+
+    const defaultClients = [
+      { name: "אבי כהן", company: "כהן יזמות", email: "avi@example.com", status: "ראה דמו", risk: "green", next: "שיחת המשך" },
+      { name: "דני לוי", company: "רמות ביצוע", email: "dani@example.com", status: "נשלחה מצגת", risk: "gold", next: "לוודא פתיחה" },
+      { name: "מיכל ארז", company: "אבני דרך", email: "michal@example.com", status: "פגישה נקבעה", risk: "blue", next: "להכין דמו" }
+    ];
+
+    const defaultTasks = [
+      { title: "לקבל תאריך אספקה מאושר", owner: "אלום השרון", due: "14.08.2026", status: "דחוף", risk: "red" },
+      { title: "לעדכן אחוז ביצוע חשמל", owner: "חשמל הדר", due: "12.08.2026", status: "פתוח", risk: "gold" },
+      { title: "לאשר חריגים בגמרים", owner: "לקוח", due: "15.08.2026", status: "ממתין", risk: "gold" }
+    ];
+
+    const defaultTeam = [
+      { name: "ליאור שגב", role: "בעלים", permission: "מלא", status: "פעיל", risk: "green" },
+      { name: "יוסי מנהל", role: "מנהל עבודה", permission: "עריכה", status: "פעיל", risk: "blue" },
+      { name: "כהן יזמות", role: "לקוח", permission: "צפייה ואישורים", status: "מוגבל", risk: "gold" }
+    ];
+
+    const defaultAlerts = [
+      { title: "ספק האלומיניום מאחר ב-6 ימים", detail: "משפיע על חיפוי, גמרים וחשבון חודשי.", risk: "red", action: "scheduleTrack" },
+      { title: "חריגה צפויה בגמרים", detail: "Profit Radar מזהה שחיקת רווח של כ-42,000 ש\"ח.", risk: "red", action: "task" },
+      { title: "חשבון חלקי לא מוכן", detail: "חסר עדכון ביצוע חשמל ואישור חריגים.", risk: "gold", action: "bill" },
+      { title: "RFI-018 מעכב תכנון", detail: "פרט חיפוי פתוח במסמכים ותוכניות.", risk: "gold", action: "docRfi" }
+    ];
+
+    let projects = JSON.parse(localStorage.getItem("segevProProjects") || "null") || defaultProjects;
+    let suppliers = JSON.parse(localStorage.getItem("segevProSuppliers") || "null") || defaultSuppliers;
+    let clients = JSON.parse(localStorage.getItem("segevProClients") || "null") || defaultClients;
+    let tasks = JSON.parse(localStorage.getItem("segevProTasks") || "null") || defaultTasks;
+    let team = JSON.parse(localStorage.getItem("segevProTeam") || "null") || defaultTeam;
+    let alerts = JSON.parse(localStorage.getItem("segevProAlerts") || "null") || defaultAlerts;
+    let selected = projects[0];
+    let lastAnswer = "";
+    let pendingAction = "";
+    let recognition = null;
+    let demoStep = 0;
+    const projectsEl = document.getElementById("projects");
+    const answerEl = document.getElementById("answer");
+    const questionEl = document.getElementById("question");
+    const toast = document.getElementById("toast");
+
+    function money(value) {
+      return value >= 1000000 ? "₪" + (value / 1000000).toFixed(1) + "M" : "₪" + value.toLocaleString("he-IL");
+    }
+
+    function toastMsg(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function setLastSaved() {
+      const value = new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+      localStorage.setItem("segevProLastSaved", value);
+      const metric = document.getElementById("lastSavedMetric");
+      if (metric) metric.textContent = value;
+    }
+
+    function renderProjects() {
+      projectsEl.innerHTML = "";
+      projects.forEach((project) => {
+        const el = document.createElement("div");
+        el.className = "project";
+        el.innerHTML = `
+          <div><strong>${project.name}</strong><span class="label">${project.client}</span></div>
+          <div><span class="label">תקציב</span><strong>${money(project.budget)}</strong></div>
+          <div><span class="label">רווח</span><strong>${money(project.profit)}</strong></div>
+          <div><span class="label">ביצוע ${project.progress}%</span><div class="progress"><span style="width:${project.progress}%"></span></div></div>
+          <button class="btn" data-action="openDetail">פתח</button>
+        `;
+        el.querySelector("button").addEventListener("click", () => {
+          selected = project;
+          updateSelected();
+          switchView("project");
+        });
+        projectsEl.appendChild(el);
+      });
+      document.getElementById("projectCount").textContent = projects.length;
+      document.getElementById("budgetTotal").textContent = money(projects.reduce((sum, p) => sum + p.budget, 0));
+      document.getElementById("profitTotal").textContent = money(projects.reduce((sum, p) => sum + p.profit, 0));
+    }
+
+    function renderSuppliers() {
+      const body = document.getElementById("suppliersBody");
+      body.innerHTML = "";
+      suppliers.forEach((supplier) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${supplier.name}</td>
+          <td>${supplier.trade}</td>
+          <td>${supplier.due}</td>
+          <td><span class="pill ${supplier.risk}">${supplier.status}</span></td>
+          <td><button class="btn" data-action="supplierFollow">פתח</button></td>
+        `;
+        body.appendChild(row);
+      });
+      body.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => requestApproval(button.dataset.action)));
+    }
+
+    function renderClients() {
+      const body = document.getElementById("clientsBody");
+      body.innerHTML = "";
+      clients.forEach((client) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${client.name}</td>
+          <td>${client.company}</td>
+          <td><span class="pill ${client.risk}">${client.status}</span></td>
+          <td>${client.next}</td>
+          <td><button class="btn" data-ai="היי שגב, תכין לי הודעת המשך ללקוח ${client.name}">הכן הודעה</button></td>
+        `;
+        body.appendChild(row);
+      });
+      body.querySelectorAll("[data-ai]").forEach((button) => button.addEventListener("click", () => ask(button.dataset.ai)));
+    }
+
+    function renderTasks() {
+      const body = document.getElementById("tasksBody");
+      body.innerHTML = "";
+      tasks.forEach((task) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${task.title}</td>
+          <td>${task.owner}</td>
+          <td>${task.due}</td>
+          <td><span class="pill ${task.risk}">${task.status}</span></td>
+          <td><button class="btn" data-action="taskFollow">פתח</button></td>
+        `;
+        body.appendChild(row);
+      });
+      document.getElementById("openTasksMetric").textContent = tasks.length;
+      document.getElementById("urgentTasksMetric").textContent = tasks.filter((task) => task.risk === "red").length;
+      body.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => requestApproval(button.dataset.action)));
+    }
+
+    function renderTeam() {
+      const body = document.getElementById("teamBody");
+      body.innerHTML = "";
+      team.forEach((member) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${member.name}</td>
+          <td>${member.role}</td>
+          <td>${member.permission}</td>
+          <td><span class="pill ${member.risk}">${member.status}</span></td>
+          <td><button class="btn" data-action="teamPermission">פתח</button></td>
+        `;
+        body.appendChild(row);
+      });
+      document.getElementById("teamCountMetric").textContent = team.length;
+      body.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => requestApproval(button.dataset.action)));
+    }
+
+    function renderAlerts() {
+      const list = document.getElementById("alertsList");
+      list.innerHTML = "";
+      alerts.forEach((alert) => {
+        const item = document.createElement("div");
+        item.className = "action-item";
+        item.innerHTML = `
+          <span><strong>${alert.title}</strong><br><small class="label">${alert.detail}</small></span>
+          <button class="btn" data-action="${alert.action}">טפל</button>
+        `;
+        list.appendChild(item);
+      });
+      document.getElementById("alertsCountMetric").textContent = alerts.length;
+      list.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => requestApproval(button.dataset.action)));
+    }
+
+    function updateSelected() {
+      document.getElementById("projectNameMetric").textContent = selected.name.replace("פרויקט ", "");
+      document.getElementById("clientMetric").textContent = selected.client;
+      document.getElementById("progressMetric").textContent = selected.progress + "%";
+      toastMsg("נפתח " + selected.name);
+    }
+
+    function switchView(view) {
+      document.querySelectorAll(".view").forEach((el) => el.classList.remove("active"));
+      document.getElementById("view-" + view).classList.add("active");
+      document.querySelectorAll(".nav button").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+      document.getElementById("pageTitle").textContent = pageMap[view][0];
+      document.getElementById("pageSubtitle").textContent = pageMap[view][1];
+    }
+
+    function learn(question) {
+      const clean = question.replace("היי שגב", "").trim();
+      const bank = JSON.parse(localStorage.getItem("segevProQuestions") || "{}");
+      bank[clean] = (bank[clean] || 0) + 1;
+      localStorage.setItem("segevProQuestions", JSON.stringify(bank));
+      setLastSaved();
+      renderLearning();
+    }
+
+    function renderLearning() {
+      const bank = JSON.parse(localStorage.getItem("segevProQuestions") || "{}");
+      const entries = Object.entries(bank).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const cards = entries.length ? entries : [["מה מצב הפרויקט?", 0], ["מי בפיגור?", 0], ["כמה כסף אני בסיכון?", 0]];
+      document.getElementById("learningCards").innerHTML = cards.map(([q, count]) => `
+        <article class="card">
+          <span class="label">${count ? "נשאל " + count + " פעמים" : "שאלה מומלצת"}</span>
+          <h3>${q}</h3>
+          <p>${count > 1 ? "שגב מציע להפוך את זה לדוח או מעקב קבוע." : "אחרי שימוש חוזר שגב ילמד את הדפוס."}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderActionLog() {
+      const actions = JSON.parse(localStorage.getItem("segevProActions") || "[]");
+      const log = document.getElementById("actionLog");
+      if (!actions.length) {
+        log.innerHTML = `<div class="log-item">עדיין אין פעולות מאושרות. שגב יציג כאן משימות, מעקבים וחשבונות לאחר אישור.</div>`;
+        return;
+      }
+      log.innerHTML = actions.slice(0, 4).map((item) => `<div class="log-item">${item}</div>`).join("");
+    }
+
+    function requestApproval(type) {
+      const labels = {
+        task: "פתיחת משימה לספק האלומיניום: למסור תאריך אספקה מאושר עד סוף היום.",
+        track: "פתיחת מעקב קבוע לספק האלומיניום בפרויקט הנבחר.",
+        bill: "הכנת חשבון חלקי לאחר השלמת עדכון ביצוע מחשמל וגמרים.",
+        sendBill: "שליחת חשבון מוכן ללקוח תל אביב לאחר בדיקת בעלים.",
+        scheduleTrack: "פתיחת מעקב לו\"ז: ספק האלומיניום חייב למסור תאריך אספקה מאושר.",
+        scheduleUpdate: "עדכון תחילת שלב הגמרים לפי איחור האלומיניום וההשפעה על החשבון.",
+        fieldBoq: "עדכון כתב הכמויות: יציקת קומה 3 בוצעה במלואה ותיכנס לחשבון החודשי.",
+        fieldDefect: "פתיחת ליקוי שטח לספק האלומיניום עם השפעה על לו\"ז ו-Profit Radar.",
+        fieldElectric: "בקשת עדכון ביצוע מקבלן החשמל לפני הכנת החשבון החודשי.",
+        docApproval: "שליחת בקשת אישור ללקוח עבור חריגים בגמרים.",
+        docRfi: "שליחת תזכורת RFI-018 למתכנן כי פרט החיפוי מעכב ביצוע.",
+        docToBoq: "הוספת סעיפים מוצעים ל-BOQ מתוך תוכנית לדוגמה לאחר בדיקת מנהל.",
+        purchaseChase: "שליחת דרישת עדכון לאלום השרון לגבי אספקת אלומיניום חזית מערבית.",
+        purchaseApprove: "אישור הזמנת לוחות חשמל לאחר בדיקת מחיר ותאריך אספקה.",
+        purchaseOrder: "פתיחת הזמנת רכש לאלומיניום לאחר אישור בעלים.",
+        purchaseQuote: "שליחת בקשה להצעת מחיר נוספת לגמרים.",
+        taskFollow: "פתיחת משימה למעקב והצגת הקשר שלה לפרויקט, לו\"ז וכסף.",
+        teamPermission: "בדיקת הרשאת משתמש והצגת פעולות שמותר לו לבצע.",
+        supplierFollow: "פתיחת מעקב ספק ועדכון פעולה להמשך טיפול."
+      };
+      pendingAction = labels[type] || "פעולה חדשה של שגב AI.";
+      document.getElementById("approvalText").textContent = pendingAction;
+      document.getElementById("approvalModal").classList.add("open");
+    }
+
+    function confirmAction() {
+      if (!pendingAction) return;
+      const actions = JSON.parse(localStorage.getItem("segevProActions") || "[]");
+      actions.unshift(new Date().toLocaleString("he-IL") + " - " + pendingAction);
+      localStorage.setItem("segevProActions", JSON.stringify(actions));
+      setLastSaved();
+      document.getElementById("approvalModal").classList.remove("open");
+      toastMsg("הפעולה אושרה ונשמרה בלוג");
+      pendingAction = "";
+      renderActionLog();
+    }
+
+    function startVoiceInput(button) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        button.classList.toggle("listening");
+        questionEl.value = "היי שגב, מה מצב הפרויקט?";
+        toastMsg("הדפדפן הזה לא תומך בזיהוי קולי. נשארים במצב דמו.");
+        return;
+      }
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+        button.classList.remove("listening");
+        return;
+      }
+      recognition = new SpeechRecognition();
+      recognition.lang = "he-IL";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      button.classList.add("listening");
+      toastMsg("שגב מקשיב. תגיד: היי שגב...");
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        questionEl.value = transcript.includes("שגב") ? transcript : "היי שגב, " + transcript;
+        ask(questionEl.value);
+      };
+      recognition.onerror = () => toastMsg("לא הצלחתי לקלוט קול ברור. אפשר להקליד לשגב.");
+      recognition.onend = () => {
+        button.classList.remove("listening");
+        recognition = null;
+      };
+      recognition.start();
+    }
+
+    function makeAnswer(question) {
+      const q = question.replace("היי שגב", "").trim();
+      if (q.includes("מזג")) return "באתר בתל אביב צפוי היום מזג אוויר חם ושמשי. מומלץ לרכז עבודות כבדות בבוקר, לדאוג למים והצללה, ולהימנע מעבודות חוץ כבדות בצהריים.";
+      if (q.includes("שטח") || q.includes("ליקוי") || q.includes("תמונה")) return `סיכום שטח ב-${selected.name}: יציקת קומה 3 בוצעה ומוכנה לעדכון ב-BOQ, יש ליקוי פתוח באלומיניום שמשפיע על הלו\"ז, וקבלן החשמל חייב לעדכן אחוז ביצוע לפני החשבון.`;
+      if (q.includes("תוכנית") || q.includes("מסמך") || q.includes("RFI") || q.includes("DWG") || q.includes("PDF") || q.includes("OCR")) return "במסמכים יש פער בתוכנית האלומיניום גרסה A-14 מול הדיווח מהשטח, ו-RFI-018 עדיין פתוח ומעכב את החיפוי. ב-MVP קריאת PDF/OCR ו-DWG יטופלו בשלבים נפרדים, אבל שגב כבר יכול לסמן פערים ולפתוח פעולות.";
+      if (q.includes("רכש") || q.includes("הזמנה") || q.includes("הצעת") || q.includes("אספקה")) return "ברכש יש שתי נקודות סיכון: הזמנת האלומיניום בסך 420 אלף ש\"ח בסיכון אספקה, ולוחות החשמל חסרים אישור. אם מחשבים גם זמן, ההצעה הזולה באלומיניום לא בהכרח עדיפה כי היא מוסיפה 9 ימי אספקה.";
+      if (q.includes("ספק") || q.includes("קבלן משנה")) return `ברשימת הספקים יש ${suppliers.length} ספקים. הספק הקריטי כרגע הוא אלום השרון בתחום האלומיניום, עם איחור שמשפיע על הלו\"ז והרווח.`;
+      if (q.includes("משימה") || q.includes("משימות")) return `יש כרגע ${tasks.length} משימות פתוחות. המשימה הדחופה ביותר היא לקבל תאריך אספקה מאושר מאלום השרון, כי היא משפיעה על הלו\"ז ועל סיכון כספי של כ-42,000 ש\"ח.`;
+      if (q.includes("הרשאה") || q.includes("צוות") || q.includes("לאשר")) return "בעלים יכול לאשר חשבון ושינוי תקציב. מנהל עבודה יכול לעדכן שטח וביצוע. לקוח רואה דוחות ואישורים בלבד. שגב מתאים את התשובה לפי ההרשאה של המשתמש.";
+      if (q.includes("התראה") || q.includes("התראות")) return `יש ${alerts.length} התראות פתוחות. שתי הדחופות הן איחור ספק האלומיניום וחריגה צפויה בגמרים. שגב ממליץ לטפל קודם באלומיניום כי הוא משפיע גם על לו\"ז, גם על חשבון וגם על רווח.`;
+      if (q.includes("פיגור") || q.includes("מאחר")) return `ב-${selected.nam
