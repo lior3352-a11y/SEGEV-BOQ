@@ -1,1 +1,21 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SEGEV BOQ</title><style>body{font-family:Arial;margin:0;background:#f6f8fb;color:#101828}.top{background:#152033;color:#fff;padding:22px;display:flex;justify-content:space-between;align-items:center}.top a{background:#fff;color:#152033;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}.wrap{max-width:1100px;margin:35px auto;padding:0 20px}.hero,.card{background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:24px;margin-bottom:18px}.hero h1{margin-top:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card h3{margin-top:0}.gold{color:#9a610d}.btn{display:inline-block;background:#d9952f;color:#17110a;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:800}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style></head><body><div class="top"><strong>SEGEV BOQ · Professional Demo</strong><a href="index.html">← חזרה למצגת</a></div><main class="wrap"><section class="hero"><h1>מרכז פיקוד לבעלים</h1><p>מערכת שמחברת כסף, זמן, שטח, ספקים ו-AI לתמונת מצב אחת.</p><a class="btn" href="index.html">חזרה למסך הראשי</a></section><div class="grid"><section class="card"><h3>Profit Radar</h3><p>זיהוי סיכון לרווח ופעולות מומלצות לפני שהחריגה גדלה.</p></section><section class="card"><h3>BOQ + ביצוע</h3><p>כתב כמויות שמחובר לביצוע, תקציב וחשבונות.</p></section><section class="card"><h3>Time-to-Money</h3><p>חיבור לוח הזמנים לעלות האיחור ולהשפעה על הרווח.</p></section><section class="card"><h3>שטח</h3><p>דיווחים, ליקויים ותמונות שמתחברים לכסף ולמשימות.</p></section><section class="card"><h3>ספקים ורכש</h3><p>השוואת ספקים, אספקות בסיכון והשפעה על הפרויקט.</p></section><section class="card"><h3>שגב AI</h3><p>עוזר ניהולי בעברית שמסכם מצב ומציע את הפעולה הבאה.</p></section></div><section class="card"><strong class="gold">גרסת לקוח בבנייה</strong><p>הגרסה המקצועית המלאה מהדיסק החיצוני נבדקת ומוכנה לשילוב בחבילת הלקוח.</p></section></main></body></html>
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEGEV BOQ</title>
+<style>body{font-family:Arial,sans-serif;background:#f6f8fb;color:#152033;display:grid;place-items:center;min-height:100vh;margin:0}.box{text-align:center}.spin{width:42px;height:42px;border:4px solid #e4e7ec;border-top-color:#d9952f;border-radius:50%;margin:0 auto 16px;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}</style>
+</head>
+<body><div class="box"><div class="spin"></div><strong>SEGEV BOQ</strong><p>טוען את המערכת...</p></div>
+<script>
+(async()=>{
+  try{
+    const files=Array.from({length:7},(_,i)=>`release-v2/part${String(i+1).padStart(2,'0')}.txt?v=20260810`);
+    const responses=await Promise.all(files.map(f=>fetch(f,{cache:'no-store'})));
+    if(responses.some(r=>!r.ok)) throw new Error('missing release part');
+    const html=(await Promise.all(responses.map(r=>r.text()))).join('');
+    if(!html.startsWith('<!doctype html>')||!html.includes('SEGEV commercial access')||!html.includes('view-monthly')) throw new Error('release validation failed');
+    document.open();document.write(html);document.close();
+  }catch(e){document.body.innerHTML='<div class="box"><h2>SEGEV BOQ</h2><p>לא ניתן לטעון את גרסת המערכת. יש לרענן את הדף.</p></div>';console.error(e)}
+})();
+</script></body></html>
