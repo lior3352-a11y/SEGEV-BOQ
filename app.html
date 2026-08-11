@@ -13,8 +13,10 @@
     const files=Array.from({length:7},(_,i)=>`release-v2/part${String(i+1).padStart(2,'0')}.txt?v=20260810`);
     const responses=await Promise.all(files.map(f=>fetch(f,{cache:'no-store'})));
     if(responses.some(r=>!r.ok)) throw new Error('missing release part');
-    const html=(await Promise.all(responses.map(r=>r.text()))).join('');
+    let html=(await Promise.all(responses.map(r=>r.text()))).join('');
     if(!html.startsWith('<!doctype html>')||!html.includes('SEGEV commercial access')||!html.includes('view-monthly')) throw new Error('release validation failed');
+    const guidance='<script src="smart-guidance.js?v=20260811"><\/script>';
+    html=html.includes('</body>')?html.replace('</body>',guidance+'</body>'):html+guidance;
     document.open();document.write(html);document.close();
   }catch(e){document.body.innerHTML='<div class="box"><h2>SEGEV BOQ</h2><p>לא ניתן לטעון את גרסת המערכת. יש לרענן את הדף.</p></div>';console.error(e)}
 })();
