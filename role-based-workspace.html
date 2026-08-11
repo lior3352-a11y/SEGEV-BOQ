@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEGEV BOQ — הרשאות וסביבת עבודה אישית</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071526;color:#edf4fb;font-family:Arial,sans-serif}.wrap{max-width:1420px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center}.badge{border:1px solid #2e6ca3;border-radius:999px;padding:7px 12px;color:#8fcbff}.grid{display:grid;grid-template-columns:420px 1fr;gap:16px;margin-top:18px}.card{background:#0c2036;border:1px solid #193b5a;border-radius:16px;padding:16px}.muted{color:#91a9bf}.role{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid #193b5a}.role:last-child{border-bottom:0}.btn{border:0;border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer;background:#1689e8;color:#fff}.btn.alt{background:#18324b}.perm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.perm{padding:12px;border:1px solid #244562;border-radius:12px;background:#091b2e}.perm label{display:flex;justify-content:space-between;gap:8px;align-items:center}.workspace{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{background:#0a1c30;border:1px solid #1d4564;border-radius:14px;padding:15px;min-height:120px}.tile h3{margin-top:0}.today{grid-column:1/-1}.task{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b3b57}.task:last-child{border-bottom:0}.danger{color:#ff6b78}.warn{color:#ffbf4b}.good{color:#4ae1a0}@media(max-width:950px){.grid{grid-template-columns:1fr}.perm-grid,.workspace{grid-template-columns:1fr 1fr}}@media(max-width:620px){.perm-grid,.workspace{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><div><h1>הרשאות + סביבת עבודה אישית</h1><div class="muted">SEGEV BOQ · Prototype · כל משתמש רואה רק את מה שהוגדר לו</div></div><span class="badge">DEV</span></div>
+<div class="grid">
+<section class="card"><h2>בחירת משתמש / תפקיד</h2><div id="roles"></div><h3>הרשאות למסכים</h3><div class="perm-grid" id="permissions"></div><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="saveProfile()">שמור הרשאות</button><button class="btn alt" onclick="resetProfile()">אפס לברירת מחדל</button></div></section>
+<section class="card"><div class="top"><div><h2 id="workspaceTitle">סביבת העבודה</h2><div class="muted" id="workspaceSub"></div></div><button class="btn alt" onclick="renderWorkspace()">רענן תצוגה</button></div><div class="workspace" id="workspace"></div></section>
+</div>
+</main>
+<script>
+const modules=[
+{id:'today',name:'היום באתר'}, {id:'tasks',name:'משימות'}, {id:'schedule',name:'לו״ז'}, {id:'field',name:'דיווח יומי'}, {id:'documents',name:'תוכניות ומסמכים'}, {id:'procurement',name:'אספקות ורכש'}, {id:'suppliers',name:'ספקים וקבלנים'}, {id:'monthly',name:'חשבון חודשי'}, {id:'accounts',name:'חשבונות'}, {id:'cashflow',name:'תזרים ומימון'}, {id:'profit',name:'Profit Radar'}, {id:'owner',name:'מרכז בעלים'}, {id:'buyers',name:'רישיונות'}
+];
+const defaults={
+'בעלים/מנכ״ל':modules.map(x=>x.id),
+'מנהל פרויקט':['tasks','schedule','field','documents','procurement','suppliers','monthly','accounts','cashflow','profit'],
+'מנהל עבודה':['today','tasks','schedule','field','documents','procurement','suppliers'],
+'כספים':['monthly','accounts','cashflow','suppliers','procurement','profit'],
+'לקוח/צפייה':['schedule','documents','monthly']
+};
+let current='מנהל עבודה';
+function key(role){return 'segevRoleWorkspace:'+role}
+function getPerms(role){try{return JSON.parse(localStorage.getItem(key(role))||'null')||defaults[role].slice()}catch(e){return defaults[role].slice()}}
+function setPerms(role,v){localStorage.setItem(key(role),JSON.stringify(v))}
+function renderRoles(){const el=document.getElementById('roles');el.innerHTML=Object.keys(defaults).map(r=>`<div class="role"><strong>${r}</strong><button class="btn ${r===current?'':'alt'}" onclick="selectRole('${r}')">${r===current?'נבחר':'בחר'}</button></div>`).join('')}
+function selectRole(r){current=r;renderRoles();renderPermissions();renderWorkspace()}
+function renderPermissions(){const selected=getPerms(current);permissions.innerHTML=modules.map(m=>`<div class="perm"><label><span>${m.name}</span><input type="checkbox" data-perm="${m.id}" ${selected.includes(m.id)?'checked':''}></label></div>`).join('')}
+function saveProfile(){const v=[...document.querySelectorAll('[data-perm]:checked')].map(x=>x.dataset.perm);setPerms(current,v);renderWorkspace()}
+function resetProfile(){localStorage.removeItem(key(current));renderPermissions();renderWorkspace()}
+function todayTile(){return `<div class="tile today"><h3>היום באתר</h3><div class="task"><span>07:00 — תדריך צוות וקבלני משנה</span><b class="good">פתוח</b></div><div class="task"><span>09:00 — אספקת אלומיניום, לבדוק קבלה</span><b class="warn">דורש תשומת לב</b></div><div class="task"><span>11:30 — בדיקת התקדמות ריצוף קומה 2</span><b>היום</b></div><div class="task"><span>15:30 — צילום מצב ועדכון דיווח יומי</span><b>היום</b></div><div class="task"><span>חסם: תוכנית חשמל מעודכנת טרם אושרה</span><b class="danger">חסום</b></div></div>`}
+const tiles={
+tasks:['משימות','8 פתוחות · 3 להיום'],schedule:['לו״ז','2 פעילויות קריטיות היום'],field:['דיווח יומי','עדכון ביצוע, כוח אדם ותמונות'],documents:['תוכניות ומסמכים','גרסת ביצוע אחרונה זמינה'],procurement:['אספקות ורכש','2 אספקות צפויות היום'],suppliers:['ספקים וקבלנים','5 צוותים פעילים באתר'],monthly:['חשבון חודשי','טיוטת החודש בתהליך'],accounts:['חשבונות','4 חשבונות פתוחים'],cashflow:['תזרים ומימון','בדיקת מימון ו-Break-Even'],profit:['Profit Radar','רווח חזוי וכסף בסיכון'],owner:['מרכז בעלים','תמונת מצב של כל החברה'],buyers:['רישיונות','ניהול לקוחות ורישיונות']};
+function renderWorkspace(){const p=getPerms(current);workspaceTitle.textContent='סביבת העבודה — '+current;workspaceSub.textContent='מוצגים רק מסכים שהוגדרו בהרשאות';workspace.innerHTML='';if(p.includes('today'))workspace.innerHTML+=todayTile();p.filter(x=>x!=='today').forEach(id=>{const t=tiles[id]||[id,''];workspace.innerHTML+=`<div class="tile"><h3>${t[0]}</h3><div class="muted">${t[1]}</div></div>`});if(!p.length)workspace.innerHTML='<div class="tile today"><h3>לא הוגדרו מסכים למשתמש זה</h3><div class="muted">יש לחזור להרשאות ולהפעיל לפחות מסך אחד.</div></div>'}
+renderRoles();renderPermissions();renderWorkspace();
+</script></body></html>
