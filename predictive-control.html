@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEGEV Predictive Control</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071526;color:#eaf4ff;font-family:Arial,sans-serif}.w{max-width:1440px;margin:auto;padding:26px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px}.badge{padding:8px 13px;border:1px solid #2c79b8;border-radius:99px;color:#8fd0ff}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.card{background:#0c2036;border:1px solid #193b5a;border-radius:16px;padding:16px}.label{color:#91a9bf;font-size:13px}.n{font-size:26px;font-weight:900;margin-top:7px}.good{color:#48dfa0}.bad{color:#ff6673}.warn{color:#ffbf4b}.blue{color:#7dc4ff}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.risk{display:flex;gap:12px;align-items:flex-start;padding:13px;border:1px solid #284a68;border-radius:12px;margin:9px 0;background:#091b2e}.dot{width:11px;height:11px;border-radius:50%;margin-top:6px;background:#ffbf4b}.dot.red{background:#ff6673}.dot.green{background:#48dfa0}.risk b{display:block;margin-bottom:4px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer;background:#1689e8;color:white}.btn.alt{background:#18324b}.sim{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.sim label{display:flex;flex-direction:column;gap:5px;color:#91a9bf;font-size:13px}.sim input,.sim select{background:#071526;color:#fff;border:1px solid #285071;border-radius:8px;padding:10px}.result{margin-top:12px;padding:14px;border:1px solid #3b5269;border-radius:12px;background:#091b2e;line-height:1.75}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.small{font-size:12px;color:#7f98af}@media(max-width:950px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}@media(max-width:560px){.cards,.sim{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="w">
+<div class="top"><div><h1>SEGEV Predictive Control</h1><div class="label">חיזוי מוקדם של רווח, תזרים, מימון ולו״ז + Decision Simulator</div></div><span class="badge">DEV MVP</span></div>
+<div class="cards">
+<div class="card"><div class="label">רווח צפוי</div><div id="profit" class="n good">—</div></div>
+<div class="card"><div class="label">מימון מרבי צפוי</div><div id="funding" class="n bad">—</div></div>
+<div class="card"><div class="label">Break-Even</div><div id="be" class="n warn">—</div></div>
+<div class="card"><div class="label">מדד סיכון חזוי</div><div id="riskScore" class="n warn">—</div></div>
+</div>
+<div class="grid">
+<section class="card"><h2>תחזית סיכונים</h2><div id="risks"></div><div class="small">החיזוי מבוסס כרגע על נתוני Profit Radar, Cashflow ותרחישים שנשמרו ב-localStorage.</div></section>
+<section class="card"><h2>Decision Simulator</h2>
+<div class="sim">
+<label>דחיית תקבול מהיזם בחודשים<input id="delay" type="number" min="0" max="6" value="1"></label>
+<label>סכום תקבול שנדחה<input id="receipt" type="number" min="0" value="900000"></label>
+<label>תוספת עלות קבלנים/ספקים<input id="extraCost" type="number" min="0" value="200000"></label>
+<label>עיכוב בלו״ז בימים<input id="delayDays" type="number" min="0" value="14"></label>
+<label>עלות עקיפה ליום<input id="dailyCost" type="number" min="0" value="6500"></label>
+<label>שיעור מימון שנתי %<input id="rate" type="number" min="0" step="0.1" value="8"></label>
+</div>
+<div class="actions"><button class="btn" onclick="simulate()">חשב השפעה</button><button class="btn alt" onclick="loadData()">טען נתונים מחדש</button></div>
+<div id="simResult" class="result">בחר תרחיש ולחץ "חשב השפעה".</div></section>
+</div>
+<section class="card"><h2>3 פעולות מומלצות לבעלים</h2><div id="actions"></div></section>
+</main>
+<script>
+const money=n=>'₪'+Math.round(Math.abs(Number(n)||0)).toLocaleString('he-IL');
+let base={profit:0,maxFunding:0,maxFundingMonth:'—',breakEven:'—',ending:0,moneyAtRisk:0};
+function read(k,f={}){try{return JSON.parse(localStorage.getItem(k)||'null')||f}catch(e){return f}}
+function loadData(){
+ const cf=read('segevCashflowBreakeven',{}), pr=read('segevProfitRadar',{}), sc=read('segevCashflowScenarioImpact',{});
+ base.maxFunding=Number(cf.maxFunding||0);base.maxFundingMonth=cf.maxFundingMonth||'—';base.breakEven=cf.breakEven||'—';base.ending=Number(cf.endingBalance||0);
+ base.profit=Number(pr.forecastProfit||pr.profit||0);base.moneyAtRisk=Number(pr.moneyAtRisk||pr.riskMoney||0);
+ if(!base.profit){const contract=Number(pr.contractValue||0),eac=Number(pr.eac||0);base.profit=contract&&eac?contract-eac:0}
+ render(sc)
+}
+function render(sc){
+ profit.textContent=base.profit?money(base.profit):'אין נתון';profit.className='n '+(base.profit<0?'bad':'good');
+ funding.textContent=base.maxFunding?money(base.maxFunding):'אין נתון';be.textContent=base.breakEven||'—';
+ const score=calcRiskScore(sc);riskScore.textContent=score+'/100';riskScore.className='n '+(score>=70?'bad':score>=40?'warn':'good');
+ const items=[];
+ if(base.maxFunding>0)items.push({red:base.maxFunding>1000000,t:'לחץ מימוני צפוי',d:`שיא המימון הצפוי הוא ${money(base.maxFunding)} בחודש ${base.maxFundingMonth}.`});
+ if(base.breakEven==='—')items.push({red:true,t:'Break-Even אינו נראה בתחזית',d:'התזרים המצטבר אינו חוזר לאפס בטווח התחזית הקיים.'});
+ if(base.moneyAtRisk>0)items.push({red:base.moneyAtRisk>300000,t:'כסף בסיכון',d:`Profit Radar מצביע על ${money(base.moneyAtRisk)} בסיכון.`});
+ if(sc&&sc.fundingIncrease>0)items.push({red:sc.fundingIncrease>300000,t:'רגישות גבוהה לדחיית תקבול',d:`התרחיש האחרון הגדיל את דרישת המימון ב-${money(sc.fundingIncrease)}.`});
+ if(!items.length)items.push({green:true,t:'לא זוהה סיכון חמור בנתונים הזמינים',d:'כדאי להמשיך להזין נתוני תזרים, חשבונות ועלויות כדי לשפר את החיזוי.'});
+ risks.innerHTML=items.map(x=>`<div class="risk"><span class="dot ${x.red?'red':x.green?'green':''}"></span><div><b>${x.t}</b><span>${x.d}</span></div></div>`).join('');
+ const a=[];
+ if(base.maxFunding>0)a.push(`להבטיח מסגרת מימון של לפחות ${money(base.maxFunding)} לפני ${base.maxFundingMonth}.`);
+ if(base.moneyAtRisk>0)a.push(`לפתוח את Profit Radar ולטפל קודם ב-${money(base.moneyAtRisk)} שנמצאים בסיכון.`);
+ if(base.breakEven==='—')a.push('לבדוק הקדמת תקבול או דחיית תשלום שאינה מפרה הסכם כדי להחזיר את הפרויקט ל-Break-Even.');
+ while(a.length<3)a.push('לעדכן נתוני ביצוע, חשבונות ותשלומים כדי לשפר את דיוק התחזית.');
+ actions.innerHTML=a.slice(0,3).map((x,i)=>`<div class="risk"><span class="dot"></span><div><b>פעולה ${i+1}</b><span>${x}</span></div></div>`).join('')
+}
+function calcRiskScore(sc){let s=10;if(base.maxFunding>500000)s+=20;if(base.maxFunding>1000000)s+=20;if(base.breakEven==='—')s+=25;if(base.moneyAtRisk>250000)s+=15;if(base.profit<0)s+=25;if(sc&&Number(sc.fundingIncrease||0)>250000)s+=15;return Math.min(100,s)}
+function simulate(){
+ const months=+delay.value||0,receiptAmt=+receipt.value||0,cost=+extraCost.value||0,days=+delayDays.value||0,daily=+dailyCost.value||0,r=+rate.value||0;
+ const scheduleCost=days*daily;const fundingPressure=receiptAmt*(months>0?1:0)+cost+scheduleCost;
+ const incrementalFunding=Math.max(0,fundingPressure*0.75);const financeCost=incrementalFunding*(r/100)*(Math.max(months,1)/12);
+ const newFunding=base.maxFunding+incrementalFunding;const newProfit=base.profit-(cost+scheduleCost+financeCost);
+ const beShift=months+Math.ceil(days/30);
+ simResult.innerHTML=`בתרחיש הזה, המימון המרבי עלול לעלות מכ-${money(base.maxFunding)} לכ-${money(newFunding)}. `+
+ `עלות ישירה/עקיפה נוספת: <b class="bad">${money(cost+scheduleCost)}</b>. עלות מימון משוערת: <b class="bad">${money(financeCost)}</b>. `+
+ `${base.profit?`הרווח הצפוי עשוי לרדת מכ-${money(base.profit)} לכ-${money(newProfit)}. `:''}`+
+ `Break-Even עלול להידחות בכ-${beShift} חודשים.`;
+ localStorage.setItem('segevPredictiveScenario',JSON.stringify({months,receiptAmt,cost,days,daily,r,newFunding,newProfit,financeCost,beShift,updatedAt:new Date().toISOString()}));
+}
+loadData();
+</script></body></html>
