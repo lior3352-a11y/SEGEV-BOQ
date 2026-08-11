@@ -8,14 +8,14 @@
 </style>
 </head>
 <body><main class="w">
-<div class="top"><div><h1>תזרים פרויקט + Break-Even</h1><div class="label">SEGEV BOQ · גרסת פיתוח — לא מחובר למערכת החיה</div></div><span class="badge">DEV</span></div>
+<div class="top"><div><h1>תזרים פרויקט + Break-Even</h1><div class="label">SEGEV BOQ · גרסת פיתוח — מחובר לשכבת הנתונים הפיננסית</div></div><span class="badge">DEV</span></div>
 <div class="cards">
 <div class="card"><div class="label">מימון נדרש כרגע</div><div class="n bad" id="currentFunding">₪0</div></div>
 <div class="card"><div class="label">מימון מרבי צפוי</div><div class="n bad" id="maxFunding">₪0</div><div class="label" id="maxFundingMonth"></div></div>
 <div class="card"><div class="label">Break-Even צפוי</div><div class="n warn" id="breakEven">—</div></div>
 <div class="card"><div class="label">יתרה מצטברת בסיום</div><div class="n" id="endingBalance">₪0</div></div>
 </div>
-<section class="card"><div class="top"><div><h2>תחזית חודשית</h2><p class="label">תקבולים מהיזם מול קבלני משנה, ספקים, הוצאות אתר ותקורות.</p></div><div class="toolbar"><button class="btn" onclick="addMonth()">הוסף חודש</button><button class="btn alt" onclick="resetDemo()">טען דוגמה</button></div></div>
+<section class="card"><div class="top"><div><h2>תחזית חודשית</h2><p class="label">תקבולים מהיזם מול קבלני משנה, ספקים, הוצאות אתר ותקורות.</p></div><div class="toolbar"><button class="btn" onclick="loadShared()">טען נתונים מהמערכת</button><button class="btn alt" onclick="resetDemo()">טען דוגמה</button><button class="btn alt" onclick="addMonth()">הוסף חודש</button></div></div>
 <div class="tablewrap"><table><thead><tr><th>חודש</th><th>תקבול מהיזם</th><th>קבלני משנה</th><th>ספקים</th><th>הוצאות אתר</th><th>תקורות</th><th>סה״כ תשלומים</th><th>פער חודשי</th><th>תזרים מצטבר</th></tr></thead><tbody id="rows"></tbody></table></div></section>
 <section class="card" style="margin-top:14px"><h2>החלטת ניהול</h2><div class="summary" id="decision"></div></section>
 </main>
@@ -31,12 +31,25 @@ const demo=[
 ];
 let data=[];
 function resetDemo(){data=JSON.parse(JSON.stringify(demo));render()}
+function monthOfDate(d){return d?d.slice(0,7):''}
+function loadShared(){
+  const db=JSON.parse(localStorage.getItem('segevProjectFinanceData')||'{"clientInvoices":[],"partyPayments":[]}');
+  const months={};
+  const ensure=m=>months[m]||(months[m]={m,inflow:0,sub:0,sup:0,site:0,oh:0});
+  db.clientInvoices.forEach(x=>{const m=monthOfDate(x.contractReceiptDate)||x.workMonth;if(m)ensure(m).inflow+=+x.amount||0});
+  db.partyPayments.forEach(x=>{const m=monthOfDate(x.paymentDate)||x.workMonth;if(!m)return;const r=ensure(m);if(x.type==='קבלן משנה')r.sub+=+x.amount||0;else r.sup+=+x.amount||0});
+  const previous=JSON.parse(localStorage.getItem('segevCashflowBreakeven')||'{}');
+  (previous.data||[]).forEach(x=>{const r=ensure(x.m);r.site=+x.site||0;r.oh=+x.oh||0});
+  data=Object.values(months).sort((a,b)=>a.m.localeCompare(b.m));
+  if(!data.length){resetDemo();return}
+  render();
+}
 function addMonth(){data.push({m:'2027-03',inflow:0,sub:0,sup:0,site:0,oh:0});render()}
 function field(i,k,v,type='number'){return `<input type="${type}" value="${v}" onchange="edit(${i},'${k}',this.value)">`}
 function edit(i,k,v){data[i][k]=k==='m'?v:(+v||0);render()}
 function render(){let cumulative=0,minCum=0,minMonth='—',breakEven='—',wasNegative=false;const body=document.getElementById('rows');body.innerHTML=data.map((r,i)=>{const out=r.sub+r.sup+r.site+r.oh;const net=r.inflow-out;cumulative+=net;if(cumulative<0)wasNegative=true;if(cumulative<minCum){minCum=cumulative;minMonth=r.m}if(wasNegative&&cumulative>=0&&breakEven==='—')breakEven=r.m;return `<tr><td>${field(i,'m',r.m,'month')}</td><td>${field(i,'inflow',r.inflow)}</td><td>${field(i,'sub',r.sub)}</td><td>${field(i,'sup',r.sup)}</td><td>${field(i,'site',r.site)}</td><td>${field(i,'oh',r.oh)}</td><td>${money(out)}</td><td class="${net<0?'bad':'good'}">${net<0?'-':'+'}${money(net)}</td><td class="${cumulative<0?'bad':'good'}">${cumulative<0?'-':'+'}${money(cumulative)}</td></tr>`}).join('');
 let running=0;data.forEach(r=>running+=r.inflow-(r.sub+r.sup+r.site+r.oh));const current=Math.max(0,-running);document.getElementById('currentFunding').textContent=money(current);document.getElementById('maxFunding').textContent=money(-minCum);document.getElementById('maxFundingMonth').textContent=minCum<0?'שיא צפוי: '+minMonth:'לא נדרש מימון';document.getElementById('breakEven').textContent=breakEven;const end=document.getElementById('endingBalance');end.textContent=(running<0?'-':'+')+money(running);end.className='n '+(running<0?'bad':'good');
-const d=document.getElementById('decision');if(minCum<0){d.innerHTML=`לפי התחזית הנוכחית, הפרויקט דורש מימון מרבי של <b class="bad">${money(-minCum)}</b> בחודש <b>${minMonth}</b>. ${breakEven!=='—'?`נקודת ה-Break-Even התזרימית צפויה ב-<b class="good">${breakEven}</b>.`:'בתחזית הנוכחית הפרויקט עדיין לא חוזר ל-Break-Even.'} שינוי בתקבול מהיזם או בתשלומי קבלני משנה וספקים מחשב את התחזית מחדש מיד.`}else{d.innerHTML='התחזית אינה מציגה צורך במימון חיצוני בתקופה הנוכחית.'}
-localStorage.setItem('segevCashflowBreakeven',JSON.stringify({data,updatedAt:new Date().toISOString(),maxFunding:-minCum,maxFundingMonth:minMonth,breakEven,endingBalance:running}));}
-resetDemo();
+const d=document.getElementById('decision');if(minCum<0){d.innerHTML=`לפי התחזית הנוכחית, הפרויקט דורש מימון מרבי של <b class="bad">${money(-minCum)}</b> בחודש <b>${minMonth}</b>. ${breakEven!=='—'?`נקודת ה-Break-Even התזרימית צפויה ב-<b class="good">${breakEven}</b>.`:'בתחזית הנוכחית הפרויקט עדיין לא חוזר ל-Break-Even.'} הנתונים נקראים כעת אוטומטית מחשבונות היזם ומהתחייבויות קבלני המשנה והספקים.`}else{d.innerHTML='התחזית אינה מציגה צורך במימון חיצוני בתקופה הנוכחית.'}
+localStorage.setItem('segevCashflowBreakeven',JSON.stringify({data,updatedAt:new Date().toISOString(),maxFunding:-minCum,maxFundingMonth:minMonth,breakEven,endingBalance:running,source:'shared-finance-data'}));}
+loadShared();
 </script></body></html>
