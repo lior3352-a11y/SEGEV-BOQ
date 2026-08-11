@@ -15,9 +15,19 @@
     if(responses.some(r=>!r.ok)) throw new Error('missing release part');
     let html=(await Promise.all(responses.map(r=>r.text()))).join('');
     if(!html.startsWith('<!doctype html>')||!html.includes('SEGEV commercial access')||!html.includes('view-monthly')) throw new Error('release validation failed');
+
     const guidance='<script src="smart-guidance.js?v=20260811"><\/script>';
-    html=html.includes('</body>')?html.replace('</body>',guidance+'</body>'):html+guidance;
+    const backControl=`
+      <style>
+        #segevBackToPresentation{position:fixed;top:14px;left:14px;z-index:99999;background:#0c2233;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:10px 14px;font:700 14px Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+        #segevBackToPresentation:hover{background:#12314a}
+        @media(max-width:700px){#segevBackToPresentation{top:10px;left:10px;padding:9px 11px;font-size:13px}}
+      </style>
+      <a id="segevBackToPresentation" href="index.html" aria-label="חזרה למצגת">← חזרה למצגת</a>`;
+
+    const injected=guidance+backControl;
+    html=html.includes('</body>')?html.replace('</body>',injected+'</body>'):html+injected;
     document.open();document.write(html);document.close();
-  }catch(e){document.body.innerHTML='<div class="box"><h2>SEGEV BOQ</h2><p>לא ניתן לטעון את גרסת המערכת. יש לרענן את הדף.</p></div>';console.error(e)}
+  }catch(e){document.body.innerHTML='<div class="box"><h2>SEGEV BOQ</h2><p>לא ניתן לטעון את גרסת המערכת. יש לרענן את הדף.</p><p><a href="index.html">חזרה למצגת</a></p></div>';console.error(e)}
 })();
 </script></body></html>
