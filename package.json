@@ -1,0 +1,35 @@
+{
+  "name": "segev-boq-commercial",
+  "version": "1.0.0",
+  "description": "SEGEV BOQ Commercial v1.0 - Construction Profit Intelligence",
+  "main": "electron/main.js",
+  "author": "SEGEV Projects",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "il.co.segev.boq",
+    "productName": "SEGEV BOQ",
+    "artifactName": "SEGEV_BOQ_Setup_${version}.${ext}",
+    "directories": {"output": "dist"},
+    "files": ["electron/**/*", "client.html", "package.json"],
+    "win": {"target": [{"target": "nsis", "arch": ["x64"]}]},
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SEGEV BOQ",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": ["he_IL", "en_US"]
+    }
+  }
+}
