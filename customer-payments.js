@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else return;
     save();renderPayments();
   };
-  nav.addEventListener('click', event => { if (event.target.closest('[data-v="payments"]')) renderPayments(); });
+  nav.addEventListener('click', event => { if (event.target.closest('[data-v="payments"]')) { show('payments'); $('title').textContent='הסכם תשלומים וחשבונות'; renderPayments(); } });
   $('paymentMonth').onchange = renderPayments;
   $('addb').addEventListener('click', renderPayments);
   $('addp').addEventListener('click', renderPayments);
