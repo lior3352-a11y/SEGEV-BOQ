@@ -1,14 +1,14 @@
-# SEGEV BOQ cloud preview
+# SEGEV BOQ contractor preview
 
-This is a separate admin-only cloud preview at `/cloud.html`. The existing GitHub Pages `/app.html` remains unchanged. The old browser-local login is not a secure commercial account system; do not reuse its publicly exposed demo password as `SEGEV_ADMIN_PASSWORD`.
+`/customer.html` is a new, clean contractor workspace. It starts at zero projects; the contractor can add a project and BOQ rows, see budget versus actual cost, and click **AI** to ask about the saved data. No fixed demo answers or sample project data are loaded. Existing `/app.html` remains unchanged while this preview is configured and tested.
 
-## Provision
+## Enable the preview
 
-1. Link this repository to the existing `segev-boq` Vercel project. Provision an isolated Neon Postgres database for this project, and set `DATABASE_URL` for Preview and Production.
-2. Run `db/schema.sql` on that database once.
-3. Set `SEGEV_ADMIN_EMAIL` and a **new, unique** `SEGEV_ADMIN_PASSWORD` as encrypted environment variables for Preview and Production. Redeploy after adding them.
-4. Open the preview's `/cloud.html` on the computer containing the desired SEGEV BOQ browser data **first**, and sign in. On the first cloud login, the browser's locally stored project data is uploaded to the empty cloud workspace. Then sign in on the phone at the *same Vercel origin* to load that workspace.
+1. Link this repository to the existing `segev-boq` Vercel project. Provision a separate Neon database for SEGEV BOQ and set `DATABASE_URL` in its Preview environment. Apply `db/schema.sql`.
+2. Configure encrypted `SEGEV_ADMIN_EMAIL` and a new `SEGEV_ADMIN_PASSWORD` in Preview. Do not reuse the password exposed in the older public demo source.
+3. Configure encrypted `GEMINI_API_KEY` in Preview. `GEMINI_MODEL` can override the default `gemini-3.8-flash`. Redeploy after changing environment variables.
+4. Open the preview URL ending `/customer.html` on a desktop computer. Sign in, create a project, add BOQ items, and ask AI a question about them. Open the same preview URL on the phone and sign in with the same account to see the saved project.
 
-The page requires a server at the same origin; GitHub Pages cannot run `/api/*`. Existing demo buyer/license actions are hidden in this admin preview and are not migrated to secure shared customer accounts. The cloud work covers the administrator's data and sign-in on multiple devices only. No passwords or license codes are uploaded in the workspace. Changes to workspace data are saved with a revision check; a conflicting write stops and asks the user to make a backup before refreshing.
+This preview has a single contractor-owner account configured by environment variables. It does **not** include self-service signup, separate customer companies, billing, plan enforcement, user roles, upload of plans/BOQ, password recovery, or private client portals. Those are required before selling this as multi-customer software. The assistant sends that account's project and BOQ data to the configured Gemini API; it returns “no data” when there are no projects and never falls back to a fabricated answer.
 
-Before migration, use the existing “יצא גיבוי” button on `/app.html` to save a JSON copy. Current demo data remains in the original browser and is not deleted by this change.
+The original browser-local app and its data are not modified or automatically imported. Export a backup there before migration.
