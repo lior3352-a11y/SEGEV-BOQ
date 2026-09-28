@@ -3,6 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "dependencies": {"@neondatabase/serverless": "^1.0.2"},
-  "scripts": {"test": "node --test test/*.test.js"}
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  },
+  "scripts": {
+    "test": "node test/customer-flow.test.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.1"
+  }
 }
