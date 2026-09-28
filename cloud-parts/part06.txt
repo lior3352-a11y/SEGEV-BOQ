@@ -1,0 +1,304 @@
+להצעת מחיר נוספת לגמרים.",
+        taskFollow: "פתיחת משימה למעקב והצגת הקשר שלה לפרויקט, לו\"ז וכסף.",
+        teamPermission: "בדיקת הרשאת משתמש והצגת פעולות שמותר לו לבצע.",
+        supplierFollow: "פתיחת מעקב ספק ועדכון פעולה להמשך טיפול."
+      };
+      pendingAction = labels[type] || "פעולה חדשה של שגב AI.";
+      document.getElementById("approvalText").textContent = pendingAction;
+      document.getElementById("approvalModal").classList.add("open");
+    }
+
+    function confirmAction() {
+      if (!pendingAction) return;
+      const actions = JSON.parse(cloudStorage.getItem("segevProActions") || "[]");
+      actions.unshift(new Date().toLocaleString("he-IL") + " - " + pendingAction);
+      cloudStorage.setItem("segevProActions", JSON.stringify(actions));
+      setLastSaved();
+      document.getElementById("approvalModal").classList.remove("open");
+      toastMsg("הפעולה אושרה ונשמרה בלוג");
+      pendingAction = "";
+      renderActionLog();
+    }
+
+    function startVoiceInput(button) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        button.classList.toggle("listening");
+        questionEl.value = "היי שגב, מה מצב הפרויקט?";
+        toastMsg("הדפדפן הזה לא תומך בזיהוי קולי. נשארים במצב דמו.");
+        return;
+      }
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+        button.classList.remove("listening");
+        return;
+      }
+      recognition = new SpeechRecognition();
+      recognition.lang = "he-IL";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      button.classList.add("listening");
+      toastMsg("שגב מקשיב. תגיד: היי שגב...");
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        questionEl.value = transcript.includes("שגב") ? transcript : "היי שגב, " + transcript;
+        ask(questionEl.value);
+      };
+      recognition.onerror = () => toastMsg("לא הצלחתי לקלוט קול ברור. אפשר להקליד לשגב.");
+      recognition.onend = () => {
+        button.classList.remove("listening");
+        recognition = null;
+      };
+      recognition.start();
+    }
+
+    function makeAnswer(question) {
+      const q = question.replace("היי שגב", "").trim();
+      if (q.includes("מזג")) return "באתר בתל אביב צפוי היום מזג אוויר חם ושמשי. מומלץ לרכז עבודות כבדות בבוקר, לדאוג למים והצללה, ולהימנע מעבודות חוץ כבדות בצהריים.";
+      if (q.includes("שטח") || q.includes("ליקוי") || q.includes("תמונה")) return `סיכום שטח ב-${selected.name}: יציקת קומה 3 בוצעה ומוכנה לעדכון ב-BOQ, יש ליקוי פתוח באלומיניום שמשפיע על הלו\"ז, וקבלן החשמל חייב לעדכן אחוז ביצוע לפני החשבון.`;
+      if (q.includes("תוכנית") || q.includes("מסמך") || q.includes("RFI") || q.includes("DWG") || q.includes("PDF") || q.includes("OCR")) return "במסמכים יש פער בתוכנית האלומיניום גרסה A-14 מול הדיווח מהשטח, ו-RFI-018 עדיין פתוח ומעכב את החיפוי. ב-MVP קריאת PDF/OCR ו-DWG יטופלו בשלבים נפרדים, אבל שגב כבר יכול לסמן פערים ולפתוח פעולות.";
+      if (q.includes("רכש") || q.includes("הזמנה") || q.includes("הצעת") || q.includes("אספקה")) return "ברכש יש שתי נקודות סיכון: הזמנת האלומיניום בסך 420 אלף ש\"ח בסיכון אספקה, ולוחות החשמל חסרים אישור. אם מחשבים גם זמן, ההצעה הזולה באלומיניום לא בהכרח עדיפה כי היא מוסיפה 9 ימי אספקה.";
+      if (q.includes("ספק") || q.includes("קבלן משנה")) return `ברשימת הספקים יש ${suppliers.length} ספקים. הספק הקריטי כרגע הוא אלום השרון בתחום האלומיניום, עם איחור שמשפיע על הלו\"ז והרווח.`;
+      if (q.includes("משימה") || q.includes("משימות")) return `יש כרגע ${tasks.length} משימות פתוחות. המשימה הדחופה ביותר היא לקבל תאריך אספקה מאושר מאלום השרון, כי היא משפיעה על הלו\"ז ועל סיכון כספי של כ-42,000 ש\"ח.`;
+      if (q.includes("הרשאה") || q.includes("צוות") || q.includes("לאשר")) return "בעלים יכול לאשר חשבון ושינוי תקציב. מנהל עבודה יכול לעדכן שטח וביצוע. לקוח רואה דוחות ואישורים בלבד. שגב מתאים את התשובה לפי ההרשאה של המשתמש.";
+      if (q.includes("התראה") || q.includes("התראות")) return `יש ${alerts.length} התראות פתוחות. שתי הדחופות הן איחור ספק האלומיניום וחריגה צפויה בגמרים. שגב ממליץ לטפל קודם באלומיניום כי הוא משפיע גם על לו\"ז, גם על חשבון וגם על רווח.`;
+      if (q.includes("פיגור") || q.includes("מאחר")) return `ב-${selected.name} יש שני גורמים בפיגור: ספק האלומיניום מאחר ב-6 ימים וקבלן החשמל לא עדכן ביצוע. אני ממליץ לפתוח מעקב לספק האלומיניום היום.`;
+      if (q.includes("לו") || q.includes("גאנט") || q.includes("איחור") || q.includes("שבוע")) return `ב-${selected.name} האיחור המרכזי הוא אלומיניום: 6 ימים. כל יום איחור מוערך בכ-7,000 ש"ח השפעה עקיפה, ולכן שבוע נוסף יכול להעלות את הסיכון לכ-68,000 ש"ח ולדחות את שלב הגמרים.`;
+      if (q.includes("כסף") || q.includes("סיכון") || q.includes("רווח")) return `ב-${selected.name} הסיכון הכספי המשוער הוא 42,000 ש"ח. אם איחור האלומיניום יימשך עוד שבוע, הסיכון יכול לעלות לכ-68,000 ש"ח.`;
+      if (q.includes("דוח")) return "דוח בוקר: פרויקט הרצליה בסיכון גבוה, שני ספקים דורשים מעקב, חשבונות פתוחים בסך 740 אלף ש\"ח, והרווח הצפוי ירד השבוע. הפעולה הראשונה: טיפול באלומיניום.";
+      if (q.includes("סיכום") || q.includes("דוחות")) return "סיכום מנהל: הביצוע בפרויקט מתקדם, אך יש שלוש נקודות לטיפול היום: איחור אלומיניום של 6 ימים, חשבון חלקי שעדיין לא מוכן, וחריגה צפויה בגמרים. ההמלצה: לסגור ספקים לפני שמתקדמים לחשבון.";
+      if (q.includes("דחוף")) return "הדבר הכי דחוף הוא ספק האלומיניום. האיחור שלו משפיע על החיפוי, על הלו\"ז ועל החשבון הבא. אני ממליץ לפתוח משימה ולדרוש תאריך אספקה מאושר.";
+      if (q.includes("לקוח") || q.includes("מצגת") || q.includes("דמו")) return `יש ${clients.length} לקוחות במעקב. ללקוח כדאי לשלוח הודעה קצרה עם קישור למצגת, ולהדגיש את הערך: שגב מזהה איחורים, מחשב השפעה כספית ומציג פעולה מומלצת. ההמשך הנכון הוא להציע פיילוט של 90 יום על פרויקט אחד.`;
+      if (q.includes("חשבון") || q.includes("לחייב")) return "כדי להוציא חשבון החודש חסרים שני דברים: עדכון ביצוע מקבלן החשמל ואישור חריגים בגמרים. אחרי זה אפשר להכין חשבון חלקי של כ-420 אלף ש\"ח לפרויקט הרצליה.";
+      return `ב-${selected.name} הביצוע עומד על ${selected.progress}%, הרווח הצפוי הוא ${money(selected.profit)}, והסטטוס הוא ${selected.riskText}. שגב ממליץ לבדוק את Profit Radar ולסגור את עדכון הספקים.`;
+    }
+
+    function ask(question) {
+      const q = question || questionEl.value || "היי שגב, מה מצב הפרויקט?";
+      questionEl.value = q;
+      learn(q);
+      lastAnswer = makeAnswer(q);
+      answerEl.textContent = lastAnswer;
+    }
+
+    function speak() {
+      const text = lastAnswer || answerEl.textContent;
+      if (!("speechSynthesis" in window)) return toastMsg("הדפדפן לא תומך בקול");
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "he-IL";
+      u.rate = 0.92;
+      speechSynthesis.speak(u);
+    }
+
+    const demoSteps = [
+      {
+        view: "owner",
+        title: "מרכז פיקוד לבעלים",
+        text: "פותחים בתמונה אחת: כמה פרויקטים, כמה כסף מנוהל, מה הרווח הצפוי ואיפה יש סיכון.",
+        question: "היי שגב, מה מצב הפרויקטים?"
+      },
+      {
+        view: "alerts",
+        title: "שגב מזהה לפני שמפסידים",
+        text: "במקום לחפש בעיות, שגב מציף התראות: איחור ספק, חריגת רווח, חשבון שלא מוכן ו-RFI שמעכב.",
+        question: "היי שגב, תסכם לי את כל ההתראות הפתוחות"
+      },
+      {
+        view: "radar",
+        title: "Profit Radar",
+        text: "כאן הסיפור נהיה עסקי: זמן, ספקים וכתב כמויות הופכים לסיכון כספי ברור.",
+        question: "היי שגב, כמה כסף אני בסיכון?"
+      },
+      {
+        view: "tasks",
+        title: "מהתראה למשימה",
+        text: "כל המלצה של שגב הופכת למשימה עם אחראי ותאריך יעד. אין המלצות באוויר.",
+        question: "היי שגב, מה המשימות הפתוחות?"
+      },
+      {
+        view: "reports",
+        title: "דוח מוכן ללקוח",
+        text: "שגב מייצר סיכום מנהל ודוח ללקוח, כולל אפשרות הדפסה או שמירה ל-PDF.",
+        question: "היי שגב, תכין לי דוח בוקר"
+      },
+      {
+        view: "ai",
+        title: "מדברים עם הפרויקט",
+        text: "הסיום: המשתמש לא מחפש במסכים. הוא אומר היי שגב, והפרויקט עונה בעברית.",
+        question: "היי שגב, מה הדבר הכי דחוף בפרויקט?"
+      }
+    ];
+
+    function renderDemoStep() {
+      const step = demoSteps[demoStep];
+      switchView(step.view);
+      ask(step.question);
+      document.getElementById("demoGuide").classList.add("open");
+      document.getElementById("demoStepCount").textContent = `שלב ${demoStep + 1} מתוך ${demoSteps.length}`;
+      document.getElementById("demoStepTitle").textContent = step.title;
+      document.getElementById("demoStepText").textContent = step.text;
+      document.getElementById("nextDemoBtn").textContent = demoStep === demoSteps.length - 1 ? "סיים דמו" : "המשך";
+    }
+
+    function startDemo() {
+      demoStep = 0;
+      renderDemoStep();
+      toastMsg("מסלול דמו 5 דקות התחיל");
+    }
+
+    function nextDemo() {
+      if (demoStep >= demoSteps.length - 1) {
+        document.getElementById("demoGuide").classList.remove("open");
+        toastMsg("הדמו הסתיים. אפשר לשלוח ללקוח או לפתוח שגב AI.");
+        return;
+      }
+      demoStep += 1;
+      renderDemoStep();
+    }
+
+    function getBackupPayload() {
+      return {
+        product: "SEGEV BOQ",
+        version: "professional-demo",
+        exportedAt: new Date().toISOString(),
+        projects,
+        suppliers,
+        clients,
+        tasks,
+        team,
+        alerts,
+        selectedProjectName: selected.name,
+        questions: JSON.parse(cloudStorage.getItem("segevProQuestions") || "{}"),
+        actions: JSON.parse(cloudStorage.getItem("segevProActions") || "[]"),
+        lastAnswer
+      };
+    }
+
+    function exportBackup() {
+      const payload = getBackupPayload();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "segev-boq-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setLastSaved();
+      document.getElementById("backupSummary").textContent = "נוצר קובץ גיבוי לנתוני הדמו. שמור אותו בתיקיית הגיבוי או בדיסק החיצוני.";
+      toastMsg("קובץ גיבוי נוצר");
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const payload = JSON.parse(reader.result);
+          if (!payload.projects || !Array.isArray(payload.projects)) throw new Error("missing projects");
+          projects = payload.projects;
+          suppliers = payload.suppliers || defaultSuppliers;
+          clients = payload.clients || defaultClients;
+          tasks = payload.tasks || defaultTasks;
+          team = payload.team || defaultTeam;
+          alerts = payload.alerts || defaultAlerts;
+          selected = projects.find((project) => project.name === payload.selectedProjectName) || projects[0];
+          cloudStorage.setItem("segevProProjects", JSON.stringify(projects));
+          cloudStorage.setItem("segevProSuppliers", JSON.stringify(suppliers));
+          cloudStorage.setItem("segevProClients", JSON.stringify(clients));
+          cloudStorage.setItem("segevProTasks", JSON.stringify(tasks));
+          cloudStorage.setItem("segevProTeam", JSON.stringify(team));
+          cloudStorage.setItem("segevProAlerts", JSON.stringify(alerts));
+          cloudStorage.setItem("segevProQuestions", JSON.stringify(payload.questions || {}));
+          cloudStorage.setItem("segevProActions", JSON.stringify(payload.actions || []));
+          lastAnswer = payload.lastAnswer || "";
+          setLastSaved();
+          renderProjects();
+          renderSuppliers();
+          renderClients();
+          renderTasks();
+          renderTeam();
+          renderAlerts();
+          renderLearning();
+          renderActionLog();
+          updateSelected();
+          document.getElementById("backupSummary").textContent = "הגיבוי יובא בהצלחה. הנתונים שוחזרו למסך ולדפדפן.";
+          toastMsg("הגיבוי שוחזר");
+        } catch (error) {
+          toastMsg("קובץ הגיבוי לא תקין");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.querySelectorAll(".nav button").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
+    document.querySelectorAll("[data-ai]").forEach((button) => button.addEventListener("click", () => ask(button.dataset.ai)));
+    document.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => requestApproval(button.dataset.action)));
+    document.getElementById("startDemoBtn").addEventListener("click", startDemo);
+    document.getElementById("nextDemoBtn").addEventListener("click", nextDemo);
+    document.getElementById("closeDemoBtn").addEventListener("click", () => document.getElementById("demoGuide").classList.remove("open"));
+    document.getElementById("askBtn").addEventListener("click", () => ask());
+    document.getElementById("speakBtn").addEventListener("click", speak);
+    document.getElementById("statusBtn").addEventListener("click", () => ask("היי שגב, מה מצב הפרויקט?"));
+    document.getElementById("sideBrief").addEventListener("click", () => ask("היי שגב, תכין לי דוח בוקר"));
+    document.getElementById("micBtn").addEventListener("click", (event) => {
+      startVoiceInput(event.currentTarget);
+    });
+    document.getElementById("newProjectBtn").addEventListener("click", () => document.getElementById("modal").classList.add("open"));
+    document.getElementById("sendPresentationBtn").addEventListener("click", () => {
+      const subject = encodeURIComponent("מצגת SEGEV BOQ ודמו חי");
+      const body = encodeURIComponent("שלום,\n\nמצורף קישור למצגת SEGEV BOQ ולדמו החי:\nhttps://lior3352-a11y.github.io/SEGEV-BOQ/\n\nהמערכת מחברת ניהול פרויקט, כתב כמויות, תקציב, Profit Radar ושגב AI בעברית.\n\nבברכה,\nליאור");
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      toastMsg("נפתחת הודעת מייל מוכנה לשליחת המצגת");
+    });
+    document.getElementById("generateReportBtn").addEventListener("click", () => {
+      const report = "שגב AI יצר סיכום: בפרויקט הרצליה הביצוע עומד על 61%, יש איחור של 6 ימים באלומיניום, סיכון כספי של 42,000 ש\"ח, וחשבונות פתוחים בסך 740,000 ש\"ח. ההמלצה להיום: לקבל התחייבות אספקה, לעדכן ביצוע חשמל, ולהכין חשבון חלקי לאחר אישור החריגים.";
+      document.getElementById("reportText").textContent = report;
+      answerEl.textContent = report;
+      lastAnswer = report;
+      toastMsg("שגב יצר סיכום מנהל");
+    });
+    document.getElementById("printReportBtn").addEventListener("click", () => {
+      toastMsg("נפתח חלון הדפסה. אפשר לשמור כ-PDF.");
+      window.print();
+    });
+    document.getElementById("exportBackupBtn").addEventListener("click", exportBackup);
+    document.getElementById("importBackupBtn").addEventListener("click", () => document.getElementById("backupFileInput").click());
+    document.getElementById("backupFileInput").addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) importBackup(file);
+      event.target.value = "";
+    });
+    document.getElementById("closeModal").addEventListener("click", () => document.getElementById("modal").classList.remove("open"));
+    document.getElementById("newSupplierBtn").addEventListener("click", () => document.getElementById("supplierModal").classList.add("open"));
+    document.getElementById("closeSupplierModal").addEventListener("click", () => document.getElementById("supplierModal").classList.remove("open"));
+    document.getElementById("saveSupplier").addEventListener("click", () => {
+      const supplier = {
+        name: document.getElementById("supplierName").value || "ספק חדש",
+        trade: document.getElementById("supplierTrade").value || "כללי",
+        due: document.getElementById("supplierDue").value || "לא נקבע",
+        status: document.getElementById("supplierStatus").value || "חדש למעקב",
+        risk: "gold"
+      };
+      suppliers.unshift(supplier);
+      cloudStorage.setItem("segevProSuppliers", JSON.stringify(suppliers));
+      setLastSaved();
+      renderSuppliers();
+      document.getElementById("supplierModal").classList.remove("open");
+      switchView("suppliers");
+      toastMsg("הספק נוסף ונשמר");
+    });
+    document.getElementById("newClientBtn").addEventListener("click", () => document.getElementById("clientModal").classList.add("open"));
+    document.getElementById("closeClientModal").addEventListener("click", () => document.getElementById("clientModal").classList.remove("open"));
+    document.getElementById("saveClient").addEventListener("click", () => {
+      const client = {
+        name: document.getElementById("clientPersonName").value || "לקוח חדש",
+        company: document.getElementById("clientCompanyName").value || "חברה חדשה",
+        email: document.getElementById("clientEmail").value || "",
+        status: document.getElementById("clientStatus").value || "חדש",
+        next: document.getElementById("clientNextAction").value || "שיחת המשך",
+        risk: "gold"
+      };
+   

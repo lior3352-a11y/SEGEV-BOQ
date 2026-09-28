@@ -1,0 +1,183 @@
+   clients.unshift(client);
+      cloudStorage.setItem("segevProClients", JSON.stringify(clients));
+      setLastSaved();
+      renderClients();
+      document.getElementById("clientModal").classList.remove("open");
+      switchView("clients");
+      toastMsg("הלקוח נוסף ונשמר");
+    });
+    document.getElementById("newTaskBtn").addEventListener("click", () => document.getElementById("taskModal").classList.add("open"));
+    document.getElementById("closeTaskModal").addEventListener("click", () => document.getElementById("taskModal").classList.remove("open"));
+    document.getElementById("saveTask").addEventListener("click", () => {
+      const task = {
+        title: document.getElementById("taskTitle").value || "משימה חדשה",
+        owner: document.getElementById("taskOwner").value || "לא משויך",
+        due: document.getElementById("taskDue").value || "לא נקבע",
+        status: document.getElementById("taskStatus").value || "פתוח",
+        risk: document.getElementById("taskStatus").value.includes("דחוף") ? "red" : "gold"
+      };
+      tasks.unshift(task);
+      cloudStorage.setItem("segevProTasks", JSON.stringify(tasks));
+      setLastSaved();
+      renderTasks();
+      document.getElementById("taskModal").classList.remove("open");
+      switchView("tasks");
+      toastMsg("המשימה נוספה ונשמרה");
+    });
+    document.getElementById("newTeamBtn").addEventListener("click", () => document.getElementById("teamModal").classList.add("open"));
+    document.getElementById("closeTeamModal").addEventListener("click", () => document.getElementById("teamModal").classList.remove("open"));
+    document.getElementById("saveTeam").addEventListener("click", () => {
+      const member = {
+        name: document.getElementById("teamName").value || "איש צוות",
+        role: document.getElementById("teamRole").value || "תפקיד",
+        permission: document.getElementById("teamPermission").value || "צפייה",
+        status: document.getElementById("teamStatus").value || "פעיל",
+        risk: document.getElementById("teamPermission").value.includes("מלא") ? "green" : "blue"
+      };
+      team.unshift(member);
+      cloudStorage.setItem("segevProTeam", JSON.stringify(team));
+      setLastSaved();
+      renderTeam();
+      document.getElementById("teamModal").classList.remove("open");
+      switchView("team");
+      toastMsg("איש הצוות נוסף ונשמר");
+    });
+    document.getElementById("saveProject").addEventListener("click", () => {
+      const project = {
+        name: document.getElementById("newName").value || "פרויקט חדש",
+        client: document.getElementById("newClient").value || "לקוח חדש",
+        budget: Number(document.getElementById("newBudget").value) || 0,
+        profit: Number(document.getElementById("newProfit").value) || 0,
+        progress: 14,
+        risk: "gold",
+        riskText: "חדש למעקב"
+      };
+      projects.unshift(project);
+      cloudStorage.setItem("segevProProjects", JSON.stringify(projects));
+      setLastSaved();
+      selected = project;
+      renderProjects();
+      updateSelected();
+      document.getElementById("modal").classList.remove("open");
+      switchView("project");
+    });
+    document.getElementById("cancelApproval").addEventListener("click", () => document.getElementById("approvalModal").classList.remove("open"));
+    document.getElementById("confirmApproval").addEventListener("click", confirmAction);
+
+    renderProjects();
+    renderSuppliers();
+    renderClients();
+    renderTasks();
+    renderTeam();
+    renderAlerts();
+    renderLearning();
+    renderActionLog();
+    document.getElementById("lastSavedMetric").textContent = cloudStorage.getItem("segevProLastSaved") || "עכשיו";
+    updateSelected();
+  
+
+    // Cloud mode: authenticate with the server and load the same workspace on every device.
+    function buyersGet(){return JSON.parse(cloudStorage.getItem('segevBuyers')||'[]')}
+    function buyersSet(v){cloudStorage.setItem('segevBuyers',JSON.stringify(v))}
+    function isExpired(b){return b.status==='חסום' || new Date(b.expiresAt+'T23:59:59')<new Date()}
+    function daysLeft(b){return Math.ceil((new Date(b.expiresAt+'T23:59:59')-new Date())/86400000)}
+    function authShow(){document.getElementById('authGate').classList.remove('hidden');document.getElementById('licenseBanner').classList.remove('show')}
+    function authHide(){document.getElementById('authGate').classList.add('hidden')}
+    function enterSystem(b){authHide();document.getElementById('licenseBanner').classList.add('show');licenseWho.textContent='מנהל־על';licenseUntil.textContent='גישה בענן';document.querySelector('[data-view="buyers"]').style.display='none'}
+    document.getElementById('signupTab').style.display='none';
+    document.getElementById('forgotBtn').style.display='none';
+    document.getElementById('loginBtn').onclick=async()=>{
+      const button=document.getElementById('loginBtn'); button.disabled=true;loginMsg.textContent='מתחבר...';
+      try{
+        await cloudSync.request('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:loginEmail.value.trim(),password:loginPassword.value})});
+        loginPassword.value='';
+        if(await cloudSync.load())enterSystem();
+      }catch(e){loginMsg.textContent=e.message==='Wrong email or password'?'אימייל או סיסמה אינם נכונים':'לא ניתן להתחבר כרגע. נסה שוב מאוחר יותר.'}
+      finally{button.disabled=false}
+    };
+    async function logout(){cloudSync.stop();await cloudSync.request('/api/session',{method:'DELETE'}).catch(()=>{});authShow()}
+    document.getElementById('logoutBtn').onclick=logout;
+    document.getElementById('expiredLogout').onclick=logout;
+    function renderBuyers(){let bs=buyersGet(),now=new Date();buyersTotal.textContent=bs.length;buyersActive.textContent=bs.filter(b=>!isExpired(b)&&daysLeft(b)>30).length;buyersSoon.textContent=bs.filter(b=>!isExpired(b)&&daysLeft(b)<=30).length;buyersExpired.textContent=bs.filter(isExpired).length;buyersTable.innerHTML=bs.map(b=>`<tr><td><strong>${b.name||""}</strong><br><span class="label">${b.company||""}</span></td><td>${b.phone||""}<br>${b.email||b.activatedEmail||""}</td><td>${b.plan||""}<br><span class="label">${b.seats||1} משתמשים</span></td><td>${b.paymentStatus||""}<br>₪${Number(b.paid||0).toLocaleString("he-IL")}</td><td><code>${b.code}</code></td><td>${b.expiresAt}</td><td><span class="pill ${isExpired(b)?"red":daysLeft(b)<=30?"gold":"green"}">${isExpired(b)?"פג/חסום":daysLeft(b)<=30?"עומד לפוג":"פעיל"}</span></td><td><div class="buyer-actions"><button class="btn" onclick="extendBuyer('${b.id}',1)">+חודש</button><button class="btn" onclick="extendBuyer('${b.id}',12)">+שנה</button><button class="btn" onclick="toggleBuyer('${b.id}')">${b.status==="חסום"?"פתח":"חסום"}</button><button class="btn" onclick="copyCode('${b.id}')">העתק קוד</button><button class="btn" onclick="newCode('${b.id}')">קוד חדש</button></div></td></tr>`).join("")}
+    window.extendBuyer=(id,m)=>{let bs=buyersGet(),b=bs.find(x=>x.id===id),d=new Date(Math.max(Date.now(),new Date(b.expiresAt+"T00:00:00").getTime()));d.setMonth(d.getMonth()+m);b.expiresAt=d.toISOString().slice(0,10);b.status="פעיל";buyersSet(bs);renderBuyers();toastMsg("תוקף הרישיון הוארך")};
+    window.toggleBuyer=id=>{let bs=buyersGet(),b=bs.find(x=>x.id===id);b.status=b.status==="חסום"?"פעיל":"חסום";buyersSet(bs);renderBuyers()};
+    window.newCode=id=>{let bs=buyersGet(),b=bs.find(x=>x.id===id);b.code=codeGen();b.activatedEmail="";b.password="";buyersSet(bs);renderBuyers();toastMsg("הונפק קוד הפעלה חדש")};
+    document.getElementById("newBuyerBtn").onclick=()=>buyerModal.classList.add("open");document.getElementById("closeBuyerModal").onclick=()=>buyerModal.classList.remove("open");
+    document.getElementById("saveBuyerBtn").onclick=()=>{let bs=buyersGet(),b={id:"B"+Date.now(),name:buyerName.value.trim(),company:buyerCompany.value.trim(),companyId:buyerCompanyId.value.trim(),phone:buyerPhone.value.trim(),email:buyerEmail.value.trim().toLowerCase(),plan:buyerPlan.value.trim(),paid:Number(buyerPaid.value||0),paymentStatus:buyerPayment.value.trim(),seats:Number(buyerSeats.value||1),purchasedAt:new Date().toISOString(),expiresAt:isoPlusMonths(buyerMonths.value),status:"פעיל",code:codeGen(),activatedEmail:"",password:""};bs.unshift(b);buyersSet(bs);buyerModal.classList.remove("open");renderBuyers();toastMsg("הרוכש נשמר. קוד: "+b.code)};
+    // seed one buyer for demonstration if none exists
+    if(!buyersGet().length) buyersSet([{id:"B-DEMO",name:"לקוח הדגמה",company:"חברת בנייה לדוגמה",companyId:"515000000",phone:"050-0000000",email:"demo@example.com",plan:"שנתי",paid:12000,paymentStatus:"שולם",seats:5,purchasedAt:new Date().toISOString(),expiresAt:isoPlusMonths(12),status:"פעיל",code:"SEGEV-DEMO-2026",activatedEmail:"",password:""}]);
+    (async function restoreAccess(){
+      authShow();
+      try{await cloudSync.request('/api/session');if(await cloudSync.load())enterSystem()}
+      catch(e){authShow()}
+    })();
+
+    // ---- SEGEV monthly account module ----
+    const monthlySeed=[
+      {code:"01.01",desc:"עבודות הכנה",contract:1,price:45000,previous:1,current:0},
+      {code:"02.10",desc:"ריצוף וחיפוי",contract:520,price:230,previous:180,current:120},
+      {code:"03.20",desc:"עבודות צבע",contract:1,price:30000,previous:.35,current:.30},
+      {code:"04.10",desc:"חשמל",contract:1,price:80000,previous:.40,current:.25},
+      {code:"05.10",desc:"אינסטלציה וכלים סניטריים",contract:1,price:60000,previous:.30,current:.30}
+    ];
+    function monthlyData(){try{return JSON.parse(cloudStorage.getItem("segevMonthlyDraft")||"null")||monthlySeed}catch(e){return monthlySeed}}
+    function monthlyMoney(n){return "₪"+Math.round(Number(n||0)).toLocaleString("he-IL")}
+    function renderMonthly(){
+      const rows=monthlyData(); monthlyRows.innerHTML=rows.map((r,i)=>`<tr><td>${r.code}</td><td>${r.desc}</td><td>${r.contract}</td><td>${monthlyMoney(r.price)}</td><td><input data-mprev="${i}" type="number" step=".01" value="${r.previous}" style="width:85px"></td><td><input data-mcur="${i}" type="number" step=".01" value="${r.current}" style="width:85px"></td><td>${Number(r.previous)+Number(r.current)}</td><td>${monthlyMoney(r.current*r.price)}</td></tr>`).join("");
+      document.querySelectorAll("[data-mprev],[data-mcur]").forEach(el=>el.onchange=()=>{let d=monthlyData(),i=Number(el.dataset.mprev??el.dataset.mcur);if(el.dataset.mprev!==undefined)d[i].previous=Number(el.value);else d[i].current=Number(el.value);cloudStorage.setItem("segevMonthlyDraft",JSON.stringify(d));renderMonthly()});
+      calcMonthly();
+    }
+    function calcMonthly(){
+      const rows=monthlyData(), prev=rows.reduce((s,r)=>s+r.previous*r.price,0), cur=rows.reduce((s,r)=>s+r.current*r.price,0), extras=Number(monthlyExtras.value||0), deductions=Number(monthlyDeductions.value||0), retention=Number(monthlyRetention.value||0), vat=Number(monthlyVat.value||0);
+      const gross=cur+extras-deductions, hold=gross*retention/100, beforeVat=gross-hold, vatSum=beforeVat*vat/100, payable=beforeVat+vatSum;
+      monthlyPrevious.textContent=monthlyMoney(prev);monthlyCurrent.textContent=monthlyMoney(cur);monthlyCumulative.textContent=monthlyMoney(prev+cur);monthlyPayable.textContent=monthlyMoney(payable);
+      monthlySummary.innerHTML=`<div class="log-item">ביצוע החודש: <strong>${monthlyMoney(cur)}</strong></div><div class="log-item">חריגים/תוספות: <strong>${monthlyMoney(extras)}</strong></div><div class="log-item">קיזוזים: <strong>${monthlyMoney(deductions)}</strong></div><div class="log-item">עיכבון: <strong>${monthlyMoney(hold)}</strong></div><div class="log-item">מע״מ: <strong>${monthlyMoney(vatSum)}</strong></div><div class="log-item">לתשלום: <strong>${monthlyMoney(payable)}</strong></div>`;
+      return {prev,cur,payable};
+    }
+    ["monthlyExtras","monthlyDeductions","monthlyRetention","monthlyVat"].forEach(id=>document.getElementById(id).oninput=calcMonthly);
+    function saveMonthly(status){
+      const sums=calcMonthly(), hist=JSON.parse(cloudStorage.getItem("segevMonthlyHistory")||"[]"), period=monthlyPeriod.value||new Date().toISOString().slice(0,7);
+      let item=hist.find(x=>x.period===period); if(!item){item={period};hist.unshift(item)}
+      item.submitted=sums.payable; item.status=status; item.approved=status==="אושר"||status==="שולם"?sums.payable:(item.approved||0);item.paid=status==="שולם"?sums.payable:(item.paid||0);item.notes=monthlyNotes.value;cloudStorage.setItem("segevMonthlyHistory",JSON.stringify(hist));monthlyStatus.value=status;renderMonthlyHistory();toastMsg("החשבון עודכן: "+status)
+    }
+    function renderMonthlyHistory(){let h=JSON.parse(cloudStorage.getItem("segevMonthlyHistory")||"[]");monthlyHistory.innerHTML=h.map(x=>`<tr><td>${x.period}</td><td>${monthlyMoney(x.submitted)}</td><td>${monthlyMoney(x.approved)}</td><td>${monthlyMoney(x.paid)}</td><td><span class="pill ${x.status==="שולם"?"green":x.status==="אושר"?"blue":x.status==="הוחזר לתיקון"?"red":"gold"}">${x.status}</span></td></tr>`).join("")}
+    newMonthlyBtn.onclick=()=>{cloudStorage.removeItem("segevMonthlyDraft");monthlyStatus.value="טיוטה";monthlyNotes.value="";renderMonthly();toastMsg("נפתח חשבון חודשי חדש")};
+    submitMonthlyBtn.onclick=()=>saveMonthly("הוגש");monthlyReturnBtn.onclick=()=>saveMonthly("הוחזר לתיקון");monthlyApproveBtn.onclick=()=>saveMonthly("אושר");monthlyPaidBtn.onclick=()=>saveMonthly("שולם");
+    monthlyPeriod.value=new Date().toISOString().slice(0,7);renderMonthly();renderMonthlyHistory();
+
+
+    // ---- SEGEV finance connections: monthly billing -> cashflow -> Profit Radar ----
+    function subBillsGet(){try{return JSON.parse(cloudStorage.getItem("segevSubBills")||"[]")}catch(e){return []}}
+    function subBillsSet(v){cloudStorage.setItem("segevSubBills",JSON.stringify(v))}
+    function currentPeriod(){return (document.getElementById("monthlyPeriod")&&monthlyPeriod.value)||new Date().toISOString().slice(0,7)}
+    function renderSubBills(){
+      const period=currentPeriod(), rows=subBillsGet().filter(x=>x.period===period);
+      if(!document.getElementById("subBillsTable")) return;
+      subBillsTable.innerHTML=rows.map(x=>`<tr><td>${x.name}</td><td>${x.trade}</td><td>${monthlyMoney(x.amount)}</td><td><span class="pill ${x.status==="שולם"?"green":x.status==="אושר"?"blue":"gold"}">${x.status}</span></td><td><button class="btn" onclick="advanceSubBill('${x.id}')">${x.status==="בבדיקה"?"אשר":x.status==="אושר"?"סמן כשולם":"שולם"}</button></td></tr>`).join("");
+      subBillsTotal.textContent=monthlyMoney(rows.reduce((s,x)=>s+Number(x.amount||0),0));
+      updateFinanceConnections();
+    }
+    window.advanceSubBill=id=>{let all=subBillsGet(),x=all.find(v=>v.id===id);if(!x)return;if(x.status==="בבדיקה")x.status="אושר";else if(x.status==="אושר")x.status="שולם";subBillsSet(all);renderSubBills();toastMsg("סטטוס חשבון קבלן המשנה עודכן")};
+    if(document.getElementById("addSubBillBtn")) addSubBillBtn.onclick=()=>subBillModal.classList.add("open");
+    if(document.getElementById("closeSubBillModal")) closeSubBillModal.onclick=()=>subBillModal.classList.remove("open");
+    if(document.getElementById("saveSubBillBtn")) saveSubBillBtn.onclick=()=>{let all=subBillsGet();all.unshift({id:"SB"+Date.now(),period:currentPeriod(),name:subBillName.value.trim(),trade:subBillTrade.value.trim(),amount:Number(subBillAmount.value||0),status:subBillStatus.value.trim()||"בבדיקה"});subBillsSet(all);subBillModal.classList.remove("open");renderSubBills();toastMsg("חשבון קבלן משנה נשמר")};
+    function updateFinanceConnections(){
+      const hist=JSON.parse(cloudStorage.getItem("segevMonthlyHistory")||"[]");
+      const approved=hist.reduce((s,x)=>s+Number(x.approved||0),0);
+      const paid=hist.reduce((s,x)=>s+Number(x.paid||0),0);
+      const subApproved=subBillsGet().filter(x=>x.status==="אושר"||x.status==="שולם").reduce((s,x)=>s+Number(x.amount||0),0);
+      const subPaid=subBillsGet().filter(x=>x.status==="שולם").reduce((s,x)=>s+Number(x.amount||0),0);
+      const net=paid-subPaid, margin=approved-subApproved;
+      const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=monthlyMoney(val)};
+      set("radarApprovedIncome",approved);set("radarPaidIncome",paid);set("radarSubcontractorCost",subApproved);set("radarNetCash",net);set("radarMonthlyMargin",margin);
+      cloudStorage.setItem("segevFinanceSnapshot",JSON.stringify({approvedIncome:approved,paidIncome:paid,subcontractorApproved:subApproved,subcontractorPaid:subPaid,netCash:net,estimatedMargin:margin,updatedAt:new Date().toISOString()}));
+    }
+    window.copyCode=id=>{const b=buyersGet().find(x=>x.id===id);if(!b)return;const text=b.code;navigator.clipboard?.writeText(text).then(()=>toastMsg("קוד ההפעלה הועתק: "+text)).catch(()=>{prompt("העתק את קוד ההפעלה",text)})};
+    const originalSaveMonthly=saveMonthly;
+    saveMonthly=function(status){originalSaveMonthly(status);updateFinanceConnections();renderSubBills()};
+    if(document.getElementById("monthlyPeriod")) monthlyPeriod.addEventListener("change",renderSubBills);
+    renderSubBills();updateFinanceConnections();
+
+</script>
+</body>
+</html>
